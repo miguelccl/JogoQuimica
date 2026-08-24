@@ -174,7 +174,6 @@
 </head>
 <body class="antialiased font-sans flex flex-col h-screen w-screen relative">
 
-    <!-- Background Effects -->
     <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-cyan-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
         <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob" style="animation-delay: 2s"></div>
@@ -185,7 +184,6 @@
     <!-- UI Container -->
     <main id="app-container" class="relative z-10 w-full h-full flex flex-col overflow-hidden">
         
-        <!-- SCREEN: HOME -->
         <section id="screen-home" class="screen flex-1 flex items-center justify-center p-6">
             <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 
@@ -297,7 +295,7 @@
             </div>
         </div>
 
-        <!-- Join Room Modal (For students accessing via direct link/home) -->
+        <!-- Join Room Modal -->
         <div id="modal-join" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity">
             <div class="glass-panel w-full max-w-sm rounded-2xl p-6 md:p-8 transform scale-95 transition-transform duration-300">
                 <div class="flex justify-between items-center mb-6">
@@ -324,17 +322,14 @@
         <!-- SCREEN: HOST LOBBY -->
         <section id="screen-host-lobby" class="screen hidden w-full h-full p-4 md:p-8 flex flex-col">
             <div class="glass-panel flex-1 rounded-3xl p-6 md:p-10 flex flex-col md:flex-row gap-10">
-                <!-- Left: Info & QR -->
                 <div class="w-full md:w-1/3 flex flex-col items-center justify-center text-center space-y-8 border-b md:border-b-0 md:border-r border-white/10 pb-8 md:pb-0 md:pr-10">
                     <div>
                         <div class="text-cyan-400 font-bold text-sm tracking-widest uppercase mb-2">CÓDIGO DA SALA</div>
                         <div id="display-room-code" class="text-6xl md:text-8xl font-display font-extrabold tracking-widest">Q7K4P</div>
                     </div>
-                    
                     <div class="bg-white p-4 rounded-2xl shadow-xl">
                         <div id="qrcode" class="w-48 h-48 md:w-64 md:h-64 flex items-center justify-center"></div>
                     </div>
-                    
                     <div>
                         <h3 class="text-xl font-bold">ESCANEIE PARA ENTRAR</h3>
                         <p class="text-slate-400 text-sm mt-2">Ou acesse usando o código acima.</p>
@@ -343,8 +338,6 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- Right: Players -->
                 <div class="w-full md:w-2/3 flex flex-col h-full">
                     <div class="flex justify-between items-end mb-6">
                         <div>
@@ -358,10 +351,7 @@
                             INICIAR QUIZ
                         </button>
                     </div>
-
-                    <!-- Players Grid -->
                     <div id="lobby-players-grid" class="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 content-start pr-2">
-                        <!-- Player cards injected here -->
                     </div>
                 </div>
             </div>
@@ -375,7 +365,6 @@
                 </div>
                 <h2 class="text-2xl font-bold mb-2">Você entrou!</h2>
                 <div id="player-lobby-name" class="text-xl text-cyan-400 font-display font-bold mb-6">Nome</div>
-                
                 <div class="w-full border-t border-white/10 pt-6">
                     <div class="animate-pulse flex flex-col items-center">
                         <i data-lucide="loader-2" class="w-6 h-6 text-slate-400 animate-spin mb-3"></i>
@@ -387,7 +376,6 @@
 
         <!-- SCREEN: HOST GAME -->
         <section id="screen-host-game" class="screen hidden w-full h-full p-4 md:p-8 flex flex-col">
-            <!-- Header -->
             <header class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-4">
                     <div class="bg-white/10 px-4 py-2 rounded-lg font-bold text-sm tracking-wider">
@@ -395,8 +383,6 @@
                     </div>
                     <div id="host-mode-badge" class="bg-purple-500/20 text-purple-400 px-4 py-2 rounded-lg font-bold text-sm">MODO</div>
                 </div>
-                
-                <!-- Timer Ring -->
                 <div class="relative w-16 h-16 flex items-center justify-center">
                     <svg class="absolute inset-0 w-full h-full transform -rotate-90">
                         <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4" />
@@ -405,23 +391,15 @@
                     <span id="host-timer-text" class="text-xl font-bold font-display relative z-10">30</span>
                 </div>
             </header>
-
-            <!-- Main Game Area -->
             <div class="flex-1 flex flex-col md:flex-row gap-6">
-                <!-- Question -->
                 <div class="flex-1 glass-panel rounded-3xl p-8 flex flex-col">
                     <div class="flex-1 flex items-center justify-center">
                         <h2 id="host-question-text" class="text-3xl md:text-5xl font-display font-bold text-center leading-tight">Carregando pergunta...</h2>
                     </div>
-                    
-                    <!-- Stats area (revealed after time) -->
                     <div id="host-stats-area" class="mt-8 hidden animate-slide-up">
                         <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 text-center">Resultados</h3>
                         <div class="grid grid-cols-4 gap-4 h-32 items-end" id="host-bars">
-                            <!-- Bars generated via JS -->
                         </div>
-                        
-                        <!-- Co-op progress bar -->
                         <div id="coop-progress-container" class="hidden mt-6">
                             <div class="flex justify-between text-sm font-bold mb-2">
                                 <span>Progresso da Turma</span>
@@ -433,18 +411,13 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Side Panel (Ranking/Info) -->
                 <div class="w-full md:w-80 glass-panel rounded-3xl p-6 flex flex-col">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-lg">Classificação</h3>
                         <span id="host-answered-count" class="text-xs bg-white/10 px-2 py-1 rounded">0/0 resp.</span>
                     </div>
-                    
                     <div id="host-leaderboard" class="flex-1 overflow-y-auto space-y-3 pr-2">
-                        <!-- Leaderboard items -->
                     </div>
-
                     <button id="btn-host-next" onclick="nextQuestionHost()" class="w-full btn-primary py-4 rounded-xl font-bold mt-4 hidden">
                         PRÓXIMA <i data-lucide="arrow-right" class="inline w-5 h-5"></i>
                     </button>
@@ -457,7 +430,6 @@
 
         <!-- SCREEN: PLAYER GAME -->
         <section id="screen-player-game" class="screen hidden w-full h-full flex flex-col overflow-hidden">
-            <!-- Top bar -->
             <div class="px-4 py-3 bg-white/5 border-b border-white/10 flex justify-between items-center shrink-0">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-xs shadow-lg" id="player-avatar-mini"></div>
@@ -471,14 +443,10 @@
                     <div class="w-10 h-10 rounded-full border-2 border-cyan-400 flex items-center justify-center font-bold" id="player-timer">30</div>
                 </div>
             </div>
-
-            <!-- Question Area -->
             <div id="player-question-container" class="flex-1 flex flex-col p-4 md:p-8 max-w-3xl mx-auto w-full transition-all duration-300">
                 <div class="flex-1 flex items-center justify-center mb-6">
                     <h2 id="player-question-text" class="text-xl md:text-3xl font-bold text-center leading-relaxed">Carregando...</h2>
                 </div>
-
-                <!-- Options -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4" id="player-options-grid">
                     <button class="option-btn p-5 rounded-2xl text-left text-lg font-medium shadow-lg flex items-start gap-4" onclick="selectAnswer(0)">
                         <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-bold shrink-0">A</span>
@@ -497,19 +465,14 @@
                         <span id="opt-3-text" class="leading-tight">Opção D</span>
                     </button>
                 </div>
-                
-                <!-- Feedback overlay (Correct/Wrong) -->
                 <div id="player-feedback" class="hidden absolute inset-0 z-20 flex-col items-center justify-center bg-black/80 backdrop-blur-sm animate-pop">
                     <div id="feedback-icon" class="w-24 h-24 rounded-full flex items-center justify-center mb-4">
-                        <!-- Icon injected here -->
                     </div>
                     <h2 id="feedback-title" class="text-4xl font-display font-bold mb-2">CORRETO!</h2>
                     <p id="feedback-points" class="text-xl text-cyan-400 font-bold">+125 pontos</p>
                     <p class="text-sm text-slate-400 mt-8 animate-pulse">Aguardando próxima questão...</p>
                 </div>
             </div>
-
-            <!-- Chaos Powers Bar (Hidden by default) -->
             <div id="chaos-powers-bar" class="hidden shrink-0 bg-slate-900 border-t border-purple-500/30 p-3 flex gap-2 overflow-x-auto">
                 <button onclick="usePower('block')" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors" id="btn-power-block">
                     <i data-lucide="ban" class="w-4 h-4 text-purple-400"></i> <span class="text-sm font-bold">Bloquear (1)</span>
@@ -525,7 +488,6 @@
             <h1 class="text-5xl font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 mb-12 animate-slide-up">PODIUM FINAL</h1>
             
             <div id="podium-container" class="flex items-end justify-center gap-4 md:gap-8 w-full max-w-4xl h-64 md:h-80 mb-12">
-                <!-- 2nd -->
                 <div class="flex flex-col items-center animate-slide-up" style="animation-delay: 0.3s">
                     <div class="text-xl font-bold truncate w-24 md:w-32 text-center" id="podium-2-name">-</div>
                     <div class="text-sm text-slate-400 mb-2" id="podium-2-score">0 pts</div>
@@ -533,7 +495,6 @@
                         <span class="text-4xl font-display font-black text-slate-900 opacity-50">2</span>
                     </div>
                 </div>
-                <!-- 1st -->
                 <div class="flex flex-col items-center animate-slide-up" style="animation-delay: 0.6s">
                     <i data-lucide="crown" class="w-12 h-12 text-yellow-400 mb-2 animate-bounce"></i>
                     <div class="text-2xl font-bold truncate w-28 md:w-40 text-center text-yellow-400" id="podium-1-name">-</div>
@@ -542,7 +503,6 @@
                         <span class="text-5xl font-display font-black text-yellow-900 opacity-50">1</span>
                     </div>
                 </div>
-                <!-- 3rd -->
                 <div class="flex flex-col items-center animate-slide-up" style="animation-delay: 0.1s">
                     <div class="text-lg font-bold truncate w-24 md:w-32 text-center text-orange-300" id="podium-3-name">-</div>
                     <div class="text-sm text-slate-400 mb-2" id="podium-3-score">0 pts</div>
@@ -551,7 +511,6 @@
                     </div>
                 </div>
             </div>
-
             <button onclick="goHome()" class="btn-primary px-8 py-4 rounded-xl font-bold text-lg mt-8">VOLTAR AO INÍCIO</button>
         </section>
 
@@ -586,12 +545,23 @@
     <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 flex flex-col gap-2 pointer-events-none"></div>
 
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
+        import { getFirestore, doc, setDoc, updateDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Environment Variables
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'quimica-quiz-local';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        
+        // Use user's provided Firebase config
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyBAFHuTixMlhCkM88jOOT8s6FhRW-sxeCk",
+            authDomain: "jogoquimica-1bb9f.firebaseapp.com",
+            projectId: "jogoquimica-1bb9f",
+            storageBucket: "jogoquimica-1bb9f.firebasestorage.app",
+            messagingSenderId: "35817978106",
+            appId: "1:35817978106:web:55d7c73497d6be1b2eb143",
+            measurementId: "G-TDXDGT04X8"
+        };
         
         // App State
         let app, db, auth;
@@ -705,7 +675,6 @@
             const target = document.getElementById(screenId);
             if (target) {
                 target.classList.remove('hidden');
-                // Small animation trigger
                 target.style.opacity = 0;
                 setTimeout(() => target.style.opacity = 1, 50);
                 target.style.transition = "opacity 0.3s ease";
@@ -768,10 +737,8 @@
             const count = parseInt(document.getElementById('config-count').value);
             const time = parseInt(document.getElementById('config-time').value);
 
-            // Select Questions
             let pool = ALL_QUESTIONS;
             if (diff !== 'random') pool = pool.filter(q => q.d === diff);
-            // Shuffle
             pool = pool.sort(() => 0.5 - Math.random());
             const selectedQ = pool.slice(0, count);
 
@@ -789,7 +756,7 @@
                     questions: selectedQ,
                     coopScore: 0
                 },
-                players: {} // uid: {name, score, ans: {}, effects: {}}
+                players: {} 
             };
 
             try {
@@ -813,7 +780,6 @@
             switchScreen('screen-host-lobby');
             document.getElementById('display-room-code').innerText = currentRoomId;
             
-            // Generate QR Code
             document.getElementById('qrcode').innerHTML = '';
             const joinUrl = window.location.href.split('?')[0] + '?code=' + currentRoomId;
             new QRCode(document.getElementById("qrcode"), {
@@ -826,7 +792,6 @@
 
         window.copyRoomLink = () => {
             const joinUrl = window.location.href.split('?')[0] + '?code=' + currentRoomId;
-            // Use fallback method for iFrame
             const el = document.createElement('textarea');
             el.value = joinUrl;
             document.body.appendChild(el);
@@ -854,10 +819,8 @@
             const totalQ = localState.roomData.game.questions.length;
             
             if (currentQ + 1 >= totalQ) {
-                // Finish Game
                 await updateDoc(getRoomPath(currentRoomId), { status: 'finished' });
             } else {
-                // Next Q
                 await updateDoc(getRoomPath(currentRoomId), {
                     'game.qIndex': currentQ + 1,
                     'game.timerEnd': Date.now() + (localState.roomData.settings.time * 1000)
@@ -905,7 +868,6 @@
 
                 const actualName = name || (data.players[currentUser.uid] ? data.players[currentUser.uid].name : "Jogador " + Math.floor(Math.random()*100));
 
-                // Join
                 await updateDoc(roomRef, {
                     [`players.${currentUser.uid}`]: {
                         name: actualName,
@@ -935,30 +897,26 @@
             if (localState.hasAnsweredCurrent) return;
             const room = localState.roomData;
             const qIndex = room.game.qIndex;
-            if (Date.now() > room.game.timerEnd) return; // Time's up
+            if (Date.now() > room.game.timerEnd) return;
             
             localState.hasAnsweredCurrent = true;
             
-            // Visual feedback local
             const btns = document.querySelectorAll('.option-btn');
             btns.forEach(b => b.disabled = true);
             btns[optIndex].classList.add('selected');
 
-            // Check correct
             const currentQ = room.game.questions[qIndex];
             const isCorrect = currentQ.a === optIndex;
             
-            // Score calc
             let points = 0;
             if (isCorrect) {
                 const timeRemaining = Math.max(0, room.game.timerEnd - Date.now());
-                const timeBonus = (timeRemaining / (room.settings.time * 1000)); // 0 to 1
+                const timeBonus = (timeRemaining / (room.settings.time * 1000));
                 const mult = currentQ.d === 'facil' ? 1.0 : currentQ.d === 'medio' ? 1.25 : 1.5;
                 points = Math.round((100 + (timeBonus * 50)) * mult);
             }
 
             try {
-                // We fetch current score first (or just assume server will eventually sync, but for simplicity we calc here)
                 const currentScore = room.players[currentUser.uid].score || 0;
                 const newScore = currentScore + points;
 
@@ -968,8 +926,6 @@
                 };
                 
                 await updateDoc(getRoomPath(currentRoomId), updates);
-                
-                // Show local feedback immediately (or wait for time to end? Prompt says show correct after time ends, but user sees "Answer registered")
                 showToast("Resposta registrada!");
 
             } catch (e) {
@@ -986,11 +942,9 @@
             const uids = Object.keys(playersMap).filter(id => id !== currentUser.uid);
             if (uids.length === 0) return;
 
-            // Random target for simplicity
             const targetId = uids[Math.floor(Math.random() * uids.length)];
             
             localState.powers[powerType]--;
-            // Update UI buttons
             document.getElementById(`btn-power-${powerType}`).querySelector('span').innerText = `${powerType === 'block' ? 'Bloquear' : 'Embaralhar'} (${localState.powers[powerType]})`;
             if (localState.powers[powerType] === 0) document.getElementById(`btn-power-${powerType}`).classList.add('opacity-50', 'pointer-events-none');
 
@@ -1021,12 +975,10 @@
                 
                 const rd = localState.roomData;
                 
-                // Route by Status
                 if (rd.status === 'lobby') {
                     if (localState.role === 'host') renderHostLobby(rd);
                 } 
                 else if (rd.status === 'playing') {
-                    // Check if question changed
                     if (oldQIndex !== rd.game.qIndex || oldStatus !== 'playing') {
                         localState.hasAnsweredCurrent = false;
                         prepareNewQuestion();
@@ -1047,7 +999,6 @@
             });
         }
 
-        // --- HOST RENDERS ---
         function renderHostLobby(data) {
             const count = Object.keys(data.players || {}).length;
             document.getElementById('lobby-player-count').innerText = count;
@@ -1082,11 +1033,9 @@
             if(data.mode === 'chaos') modeName = '😈 CAOS';
             document.getElementById('host-mode-badge').innerText = modeName;
 
-            // Stats
             const ansArr = Object.values(data.players).map(p => p.ans[g.qIndex]).filter(a => a !== undefined);
             document.getElementById('host-answered-count').innerText = `${ansArr.length}/${Object.keys(data.players).length} resp.`;
             
-            // Check if time is up
             const timeUp = Date.now() >= g.timerEnd;
             
             if (timeUp) {
@@ -1097,7 +1046,6 @@
                     document.getElementById('btn-host-finish').classList.remove('hidden');
                 }
 
-                // Render Bars
                 const counts = [0,0,0,0];
                 ansArr.forEach(a => counts[a]++);
                 const maxCount = Math.max(...counts, 1);
@@ -1130,32 +1078,9 @@
                 document.getElementById('btn-host-finish').classList.add('hidden');
             }
 
-            // Leaderboard update
             updateLeaderboardUI(data);
         }
-        // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBAFHuTixMlhCkM88jOOT8s6FhRW-sxeCk",
-  authDomain: "jogoquimica-1bb9f.firebaseapp.com",
-  projectId: "jogoquimica-1bb9f",
-  storageBucket: "jogoquimica-1bb9f.firebasestorage.app",
-  messagingSenderId: "35817978106",
-  appId: "1:35817978106:web:55d7c73497d6be1b2eb143",
-  measurementId: "G-TDXDGT04X8"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-        
         function updateLeaderboardUI(data) {
             const list = document.getElementById('host-leaderboard');
             list.innerHTML = '';
@@ -1165,8 +1090,7 @@ const analytics = getAnalytics(app);
                 return;
             }
 
-            // Sort players
-            const arr = Object.values(data.players).sort((a,b) => (b.score||0) - (a.score||0)).slice(0, 8); // Top 8 for sidebar
+            const arr = Object.values(data.players).sort((a,b) => (b.score||0) - (a.score||0)).slice(0, 8);
             arr.forEach((p, idx) => {
                 let color = idx === 0 ? 'text-yellow-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-orange-400' : 'text-slate-400';
                 list.innerHTML += `
@@ -1198,7 +1122,6 @@ const analytics = getAnalytics(app);
             }
         }
 
-        // --- PLAYER RENDERS ---
         function renderPlayerGame(data) {
             switchScreen('screen-player-game');
             const g = data.game;
@@ -1210,18 +1133,15 @@ const analytics = getAnalytics(app);
             document.getElementById('player-score-mini').innerText = `${myData.score || 0} pts`;
             document.getElementById('player-avatar-mini').innerText = myData.name.charAt(0).toUpperCase();
             
-            // Calculate rank
             const rank = Object.values(data.players).filter(p => (p.score||0) > (myData.score||0)).length + 1;
             document.getElementById('player-rank-mini').innerText = `${rank}º lugar`;
 
-            // Question text
             document.getElementById('player-question-text').innerText = q.t;
             
             const timeUp = Date.now() >= g.timerEnd;
 
-            // Options setup (respect shuffle effect)
             const isShuffled = myData.effects?.shuffle;
-            const order = isShuffled ? [3,1,0,2] : [0,1,2,3]; // Simplified deterministic shuffle for visual effect
+            const order = isShuffled ? [3,1,0,2] : [0,1,2,3];
 
             const optsHTML = order.map(i => {
                 const label = ['A','B','C','D'][i];
@@ -1234,9 +1154,7 @@ const analytics = getAnalytics(app);
             }).join('');
             document.getElementById('player-options-grid').innerHTML = optsHTML;
 
-            // Block effect
             if(myData.effects?.block && !localState.hasAnsweredCurrent) {
-                // block one random incorrect answer
                 const wrongs = [0,1,2,3].filter(x => x !== q.a);
                 const toBlock = wrongs[Math.floor(Math.random() * wrongs.length)];
                 const btn = document.getElementById(`p-opt-${toBlock}`);
@@ -1247,12 +1165,10 @@ const analytics = getAnalytics(app);
                 }
             }
 
-            // Fog effect
             const container = document.getElementById('player-question-container');
             if(myData.effects?.fog) container.classList.add('effect-fog');
             else container.classList.remove('effect-fog');
 
-            // Set state of buttons
             const btns = document.querySelectorAll('.option-btn');
             if (localState.hasAnsweredCurrent || timeUp) {
                 btns.forEach(b => b.disabled = true);
@@ -1262,13 +1178,11 @@ const analytics = getAnalytics(app);
                 }
             }
 
-            // Show Feedback if time is up
             if (timeUp) {
                 const myAns = myData.ans[g.qIndex];
                 const fb = document.getElementById('player-feedback');
                 const isCor = myAns === q.a;
                 
-                // Color buttons correctly
                 document.getElementById(`p-opt-${q.a}`)?.classList.add('correct');
                 if (myAns !== undefined && !isCor) document.getElementById(`p-opt-${myAns}`)?.classList.add('wrong');
 
@@ -1280,7 +1194,6 @@ const analytics = getAnalytics(app);
                     document.getElementById('feedback-title').innerText = isCor ? 'CORRETO!' : 'ERROU!';
                     document.getElementById('feedback-title').className = `text-4xl font-display font-bold mb-2 ${isCor ? 'text-green-400' : 'text-red-400'}`;
                     
-                    // Note: actual points require calculation based on before/after score, skipping for brevity, showing generic text.
                     document.getElementById('feedback-points').innerText = isCor ? "Pontos computados!" : "0 pontos";
                 }
             } else {
@@ -1288,7 +1201,6 @@ const analytics = getAnalytics(app);
                 document.getElementById('player-feedback').classList.remove('flex');
             }
 
-            // Chaos Mode UI
             if (data.mode === 'chaos') {
                 document.getElementById('chaos-powers-bar').classList.remove('hidden');
             }
@@ -1310,20 +1222,15 @@ const analytics = getAnalytics(app);
         }
 
         function prepareNewQuestion() {
-            // Reset local visual states
             document.getElementById('player-feedback')?.classList.add('hidden');
             document.getElementById('player-feedback')?.classList.remove('flex');
             
-            // Clear effects from DB (fire and forget for player)
             if (localState.role === 'player') {
                 const roomRef = getRoomPath(currentRoomId);
                 updateDoc(roomRef, { [`players.${currentUser.uid}.effects`]: {} }).catch(e=>console.log(e));
             }
         }
 
-        // ----------------------------------------------------
-        // TIMER LOGIC
-        // ----------------------------------------------------
         function manageTimer() {
             if (localState.timerInterval) cancelAnimationFrame(localState.timerInterval);
             
@@ -1335,7 +1242,6 @@ const analytics = getAnalytics(app);
                 const rem = Math.max(0, g.timerEnd - now);
                 const seconds = Math.ceil(rem / 1000);
                 
-                // Host UI
                 if (localState.role === 'host') {
                     const el = document.getElementById('host-timer-text');
                     const ring = document.getElementById('host-timer-ring');
@@ -1343,12 +1249,11 @@ const analytics = getAnalytics(app);
                     if(ring) {
                         const pct = rem / duration;
                         ring.style.strokeDashoffset = 175 - (175 * pct);
-                        if(pct < 0.2) ring.style.stroke = '#ef4444'; // red
+                        if(pct < 0.2) ring.style.stroke = '#ef4444';
                         else ring.style.stroke = '#06b6d4';
                     }
                 }
 
-                // Player UI
                 if (localState.role === 'player') {
                     const el = document.getElementById('player-timer');
                     if(el) {
@@ -1372,7 +1277,6 @@ const analytics = getAnalytics(app);
             switchScreen('screen-home');
         };
 
-        // URL Check for direct join
         window.addEventListener('load', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
@@ -1423,7 +1327,6 @@ const analytics = getAnalytics(app);
                     ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
                     ctx.fill();
 
-                    // Lines
                     for(let j=i+1; j<particles.length; j++) {
                         let p2 = particles[j];
                         let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
