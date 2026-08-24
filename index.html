@@ -544,13 +544,13 @@
     <!-- Global Toast Container -->
     <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 flex flex-col gap-2 pointer-events-none"></div>
 
-<script type="module">
-        // 1. IMPORTAÇÕES CORRETAS (Agora incluindo o Firestore/Banco de Dados)
+    <script type="module">
+        // 1. Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 2. SUA CONFIGURAÇÃO
+        // 2. Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBAFHuTixMlhCkM88jOOT8s6FhRW-sxeCk",
             authDomain: "jogoquimica-1bb9f.firebaseapp.com",
@@ -576,12 +576,12 @@
             powers: { block: 1, shuffle: 1 } 
         };
 
-        // UI Initialization (O restante do seu código original continua a partir daqui!)
+        // UI Initialization
         lucide.createIcons();
         initCanvasBackground();
 
         // ----------------------------------------------------
-        // QUESTION BANK (50 Questions parsed from prompt)
+        // QUESTION BANK (50 Questions)
         // ----------------------------------------------------
         const ALL_QUESTIONS = [
             { id:1, d:"facil", t:"Um átomo neutro possui Z=11 e A=23. Ao perder um elétron e virar cátion monovalente, qual a composição?", o:["11p, 12n e 10e", "11p, 11n e 11e", "10p, 12n e 11e", "11p, 23n e 10e"], a:0 },
@@ -651,7 +651,12 @@
 
                 const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
                 if (token) {
-                    await signInWithCustomToken(auth, token);
+                    try {
+                        await signInWithCustomToken(auth, token);
+                    } catch (tokenError) {
+                        console.warn("Custom token mismatch/failed, falling back to anonymous auth:", tokenError);
+                        await signInAnonymously(auth);
+                    }
                 } else {
                     await signInAnonymously(auth);
                 }
@@ -747,7 +752,7 @@
 
             const initialData = {
                 hostId: currentUser.uid,
-                status: 'lobby', // lobby, playing, finished
+                status: 'lobby',
                 mode: mode,
                 settings: { count, time },
                 game: {
@@ -1286,9 +1291,7 @@
             }
         });
 
-        // ----------------------------------------------------
-        // BACKGROUND ANIMATION (Canvas Particles)
-        // ----------------------------------------------------
+        // Background Animation
         function initCanvasBackground() {
             const canvas = document.getElementById('bg-canvas');
             const ctx = canvas.getContext('2d');
