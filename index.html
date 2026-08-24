@@ -544,16 +544,14 @@
     <!-- Global Toast Container -->
     <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 flex flex-col gap-2 pointer-events-none"></div>
 
-    <script type="module">
+<script type="module">
+        // 1. IMPORTAÇÕES CORRETAS (Agora incluindo o Firestore/Banco de Dados)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Environment Variables
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'quimica-quiz-local';
-        
-        // Use user's provided Firebase config
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+        // 2. SUA CONFIGURAÇÃO
+        const firebaseConfig = {
             apiKey: "AIzaSyBAFHuTixMlhCkM88jOOT8s6FhRW-sxeCk",
             authDomain: "jogoquimica-1bb9f.firebaseapp.com",
             projectId: "jogoquimica-1bb9f",
@@ -563,20 +561,22 @@
             measurementId: "G-TDXDGT04X8"
         };
         
+        const appId = 'quimica-quiz-local';
+        
         // App State
         let app, db, auth;
-        let currentUser = null; // { uid, isHost, name, roomId }
+        let currentUser = null;
         let roomUnsubscribe = null;
         let currentRoomId = null;
         let localState = {
-            role: null, // 'host' | 'player'
+            role: null,
             roomData: null,
             timerInterval: null,
             hasAnsweredCurrent: false,
-            powers: { block: 1, shuffle: 1 } // Initial chaos powers
+            powers: { block: 1, shuffle: 1 } 
         };
 
-        // UI Initialization
+        // UI Initialization (O restante do seu código original continua a partir daqui!)
         lucide.createIcons();
         initCanvasBackground();
 
