@@ -3,1348 +3,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuimicaQuiz - Game Show</title>
+    <meta name="theme-color" content="#09090b">
+    <title>QuimicaQuiz - Educacional</title>
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Manrope', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Manrope', 'sans-serif'] },
                     colors: {
-                        brand: {
-                            dark: '#020617', // slate-950
-                            darker: '#000000',
-                            card: 'rgba(255, 255, 255, 0.05)',
-                            cardHover: 'rgba(255, 255, 255, 0.1)',
-                            border: 'rgba(255, 255, 255, 0.1)',
-                            cyan: '#06b6d4',
-                            purple: '#a855f7',
-                            green: '#22c55e',
-                            red: '#ef4444',
-                            yellow: '#eab308'
-                        }
-                    },
-                    animation: {
-                        'blob': 'blob 7s infinite',
-                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'slide-up': 'slideUp 0.3s ease-out',
-                        'pop': 'pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                    },
-                    keyframes: {
-                        blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        },
-                        pop: {
-                            '0%': { transform: 'scale(0.8)', opacity: '0' },
-                            '100%': { transform: 'scale(1)', opacity: '1' },
-                        }
+                        bg: '#09090b',
+                        surface: '#18181b',
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        accent: '#06b6d4'
                     }
                 }
             }
         }
     </script>
-
-    <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- QR Code Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-    <style>
-        /* Custom Styles & Glassmorphism */
-        body {
-            background-color: #020617;
-            color: #f8fafc;
-            overflow: hidden;
-            touch-action: manipulation;
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
         }
-        
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.2s ease;
-        }
-
-        .glass-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
-            transition: all 0.2s;
-        }
-        
-        .btn-primary:hover {
-            box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .btn-primary:active {
-            transform: translateY(1px);
-        }
-
-        .btn-chaos {
-            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
-        }
-
-        /* Option buttons */
-        .option-btn {
-            background: rgba(30, 41, 59, 0.8);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .option-btn:hover:not(:disabled) {
-            background: rgba(51, 65, 85, 0.9);
-            border-color: rgba(6, 182, 212, 0.5);
-            transform: scale(1.02);
-        }
-        .option-btn:active:not(:disabled) {
-            transform: scale(0.98);
-        }
-        .option-btn.selected {
-            background: rgba(6, 182, 212, 0.2);
-            border-color: #06b6d4;
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
-        }
-        .option-btn.correct {
-            background: rgba(34, 197, 94, 0.2) !important;
-            border-color: #22c55e !important;
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4) !important;
-        }
-        .option-btn.wrong {
-            background: rgba(239, 68, 68, 0.2) !important;
-            border-color: #ef4444 !important;
-            opacity: 0.7;
-        }
-
-        /* Sabotage Effects */
-        .effect-fog {
-            filter: blur(6px);
-            transition: filter 0.5s ease;
-        }
-        .effect-shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
-        /* Hide scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
-
-        /* Generic modal overlay */
-        #toast-container { z-index: 9999; }
-    </style>
+    </script>
+    <link rel="stylesheet" href="./css/style.css">
 </head>
-<body class="antialiased font-sans flex flex-col h-screen w-screen relative">
+<body class="antialiased flex flex-col h-screen w-screen relative selection:bg-primary selection:text-white">
 
-    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-cyan-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
-        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob" style="animation-delay: 2s"></div>
-        <div class="absolute bottom-[-20%] left-[20%] w-[500px] h-[500px] bg-blue-600/20 rounded-full mix-blend-screen filter blur-[120px] animate-blob" style="animation-delay: 4s"></div>
-        <canvas id="bg-canvas" class="absolute inset-0 opacity-30"></canvas>
+    <!-- Background Animado Reduzido para Performance -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none opacity-40">
+        <div class="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full mix-blend-screen blur-[120px]"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-secondary/20 rounded-full mix-blend-screen blur-[120px]"></div>
     </div>
 
-    <!-- UI Container -->
+    <!-- Ticker de Notificações (Entrou/Saiu) -->
+    <div id="ticker-container" class="fixed top-4 left-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
     <main id="app-container" class="relative z-10 w-full h-full flex flex-col overflow-hidden">
         
-        <section id="screen-home" class="screen flex-1 flex items-center justify-center p-6">
-            <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                
-                <!-- Left: Content -->
-                <div class="flex flex-col gap-6 text-center md:text-left z-10">
-                    <div class="inline-flex items-center justify-center md:justify-start gap-2 text-cyan-400 font-bold tracking-wider text-sm mb-2">
-                        <i data-lucide="flask-conical" class="w-5 h-5"></i>
-                        <span>GAME SHOW EDUCACIONAL</span>
-                    </div>
-                    <h1 class="text-5xl md:text-7xl font-display font-extrabold leading-tight tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-cyan-300">
-                        QUIZ DE<br>QUÍMICA
-                    </h1>
-                    <p class="text-lg md:text-xl text-slate-400 font-light max-w-md mx-auto md:mx-0">
-                        Teste seus conhecimentos. Trabalhe em equipe. Supere seus colegas. Uma nova forma de aprender ciência.
-                    </p>
-                    
-                    <div class="flex flex-col sm:flex-row gap-4 mt-8">
-                        <button onclick="showCreateRoomModal()" class="btn-primary px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2">
-                            <i data-lucide="plus-circle"></i> CRIAR SALA
-                        </button>
-                        <button onclick="showJoinRoomModal()" class="glass-card px-8 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-white/10">
-                            <i data-lucide="log-in"></i> ENTRAR NA SALA
-                        </button>
-                    </div>
+        <!-- LOADING INICIAL -->
+        <section id="screen-loading" class="screen flex-1 flex flex-col items-center justify-center p-6 text-center animate-enter" aria-live="polite">
+            <i data-lucide="loader-2" class="w-12 h-12 text-primary animate-spin mb-4"></i>
+            <h2 class="text-xl font-bold text-white">Conectando...</h2>
+        </section>
 
-                    <div class="flex items-center justify-center md:justify-start gap-6 mt-8 text-sm text-slate-500 font-medium">
-                        <div class="flex items-center gap-2"><i data-lucide="users" class="w-4 h-4"></i> Até 50 jogadores</div>
-                        <div class="flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4"></i> Tempo real</div>
-                    </div>
+        <!-- HOME -->
+        <section id="screen-home" class="screen hidden flex-1 flex items-center justify-center p-6 relative">
+            <div id="rocket-canvas-container" class="absolute inset-0 z-0 pointer-events-auto"></div>
+            
+            <div class="max-w-5xl w-full flex flex-col items-center text-center animate-enter relative z-10 pointer-events-none">
+                <div class="inline-flex items-center justify-center gap-2 text-primary font-bold tracking-wider text-sm mb-4 bg-bg/50 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md">
+                    <i data-lucide="flask-conical" class="w-5 h-5"></i>
+                    <span>EXPLORE O UNIVERSO DA QUÍMICA</span>
                 </div>
-
-                <!-- Right: Visual Hero -->
-                <div class="hidden md:flex relative h-[500px] items-center justify-center perspective-1000">
-                    <!-- CSS Molecule abstraction -->
-                    <div class="relative w-64 h-64 animate-[spin_20s_linear_infinite]">
-                        <div class="absolute inset-0 rounded-full border border-cyan-500/30"></div>
-                        <div class="absolute inset-4 rounded-full border border-purple-500/30 rotate-45"></div>
-                        
-                        <!-- Atoms -->
-                        <div class="absolute top-0 left-1/2 -ml-4 -mt-4 w-8 h-8 bg-cyan-400 rounded-full shadow-[0_0_20px_#06b6d4]"></div>
-                        <div class="absolute bottom-0 left-1/2 -ml-4 -mb-4 w-8 h-8 bg-cyan-400 rounded-full shadow-[0_0_20px_#06b6d4]"></div>
-                        <div class="absolute top-1/2 left-0 -ml-4 -mt-4 w-6 h-6 bg-purple-400 rounded-full shadow-[0_0_15px_#a855f7]"></div>
-                        <div class="absolute top-1/2 right-0 -mr-4 -mt-4 w-6 h-6 bg-purple-400 rounded-full shadow-[0_0_15px_#a855f7]"></div>
-                        
-                        <!-- Core -->
-                        <div class="absolute top-1/2 left-1/2 -ml-8 -mt-8 w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full shadow-[0_0_30px_#3b82f6] flex items-center justify-center">
-                            <i data-lucide="atom" class="text-white w-8 h-8"></i>
-                        </div>
-                    </div>
+                <h1 class="text-6xl md:text-8xl font-display font-black leading-tight tracking-tight text-white mb-6 drop-shadow-2xl">
+                    Quimica<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Quiz</span>
+                </h1>
+                <p class="text-xl text-slate-300 font-medium max-w-2xl mx-auto drop-shadow-md">
+                    Aprendizado colaborativo em tempo real. Crie salas, jogue em equipe e teste seus conhecimentos numa jornada interativa.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-6 mt-12 pointer-events-auto">
+                    <button id="btn-show-create" class="btn-primary px-10 py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 transition-transform hover:scale-105 shadow-[0_0_40px_rgba(99,102,241,0.4)]" aria-label="Criar nova sala">
+                        <i data-lucide="plus" class="w-6 h-6"></i> Nova Sala
+                    </button>
+                    <button id="btn-show-join" class="bg-surface/80 backdrop-blur-md border border-white/20 px-10 py-5 rounded-2xl font-bold text-xl flex items-center justify-center gap-3 hover:bg-surface hover:border-slate-500 transition-all hover:scale-105" aria-label="Entrar em uma sala">
+                        <i data-lucide="log-in" class="w-6 h-6"></i> Entrar
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- Create Room Modal -->
-        <div id="modal-create" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity">
-            <div class="glass-panel w-full max-w-lg rounded-2xl p-6 md:p-8 transform scale-95 transition-transform duration-300">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-display font-bold text-white">Configurar Partida</h2>
-                    <button onclick="closeModal('modal-create')" class="text-slate-400 hover:text-white"><i data-lucide="x"></i></button>
-                </div>
-                
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-2">Modo de Jogo</label>
-                        <select id="config-mode" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-3 text-white outline-none focus:border-cyan-500 transition-colors">
-                            <option value="ffa">Todos Contra Todos</option>
-                            <option value="coop">Cooperação Total</option>
-                            <option value="teams">Equipes (Divisão Automática)</option>
-                            <option value="tournament">Torneio 1x1 (Mata-mata)</option>
-                            <option value="chaos">😈 MODO CAOS (Sabotagem)</option>
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2">Dificuldade</label>
-                            <select id="config-diff" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-3 text-white outline-none focus:border-cyan-500">
-                                <option value="random">Aleatório Equilibrado</option>
-                                <option value="facil">Apenas Fáceis</option>
-                                <option value="medio">Apenas Médias</option>
-                                <option value="dificil">Apenas Difíceis</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2">Questões</label>
-                            <select id="config-count" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-3 text-white outline-none focus:border-cyan-500">
-                                <option value="5">5 Questões</option>
-                                <option value="10" selected>10 Questões</option>
-                                <option value="15">15 Questões</option>
-                                <option value="20">20 Questões</option>
-                                <option value="30">30 Questões</option>
-                                <option value="50">50 Questões (Todas)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-2">Tempo por Questão</label>
-                        <select id="config-time" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-3 text-white outline-none focus:border-cyan-500">
-                            <option value="15">15 Segundos</option>
-                            <option value="20">20 Segundos</option>
-                            <option value="30" selected>30 Segundos</option>
-                            <option value="45">45 Segundos</option>
-                            <option value="60">60 Segundos</option>
-                        </select>
-                    </div>
-                    <button id="btn-do-create" onclick="createRoom()" class="w-full btn-primary py-4 rounded-xl font-bold text-lg mt-4 flex justify-center items-center gap-2">
-                        <span>GERAR SALA</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Join Room Modal -->
-        <div id="modal-join" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm hidden opacity-0 transition-opacity">
-            <div class="glass-panel w-full max-w-sm rounded-2xl p-6 md:p-8 transform scale-95 transition-transform duration-300">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-display font-bold text-white">Entrar no Quiz</h2>
-                    <button onclick="closeModal('modal-join')" class="text-slate-400 hover:text-white"><i data-lucide="x"></i></button>
-                </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-2">Código da Sala</label>
-                        <input type="text" id="join-code" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-center text-2xl font-bold text-white uppercase outline-none focus:border-cyan-500 transition-colors" placeholder="Q7K4P" maxlength="5">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-2">Seu Nome</label>
-                        <input type="text" id="join-name" class="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-lg text-white outline-none focus:border-cyan-500 transition-colors" placeholder="Ex: Miguel" maxlength="15">
-                    </div>
-                    <button id="btn-do-join" onclick="joinRoom()" class="w-full btn-primary py-4 rounded-xl font-bold text-lg mt-2 flex justify-center items-center gap-2">
-                        <span>ENTRAR AGORA</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- SCREEN: HOST LOBBY -->
+        <!-- HOST LOBBY -->
         <section id="screen-host-lobby" class="screen hidden w-full h-full p-4 md:p-8 flex flex-col">
-            <div class="glass-panel flex-1 rounded-3xl p-6 md:p-10 flex flex-col md:flex-row gap-10">
-                <div class="w-full md:w-1/3 flex flex-col items-center justify-center text-center space-y-8 border-b md:border-b-0 md:border-r border-white/10 pb-8 md:pb-0 md:pr-10">
+            <div class="glass-panel flex-1 p-6 md:p-10 flex flex-col md:flex-row gap-10 animate-enter">
+                <div class="w-full md:w-1/3 flex flex-col items-center justify-center text-center space-y-6 md:border-r border-white/10 pb-8 md:pb-0 md:pr-10">
                     <div>
-                        <div class="text-cyan-400 font-bold text-sm tracking-widest uppercase mb-2">CÓDIGO DA SALA</div>
-                        <div id="display-room-code" class="text-6xl md:text-8xl font-display font-extrabold tracking-widest">Q7K4P</div>
+                        <div class="text-slate-400 font-bold text-sm tracking-widest uppercase mb-1">CÓDIGO DE ACESSO</div>
+                        <div id="display-room-code" class="text-6xl md:text-8xl font-display font-black text-white tracking-widest selection:bg-transparent">----</div>
                     </div>
-                    <div class="bg-white p-4 rounded-2xl shadow-xl">
+                    <div class="bg-white p-4 rounded-2xl shadow-xl hover:scale-105 transition-transform cursor-pointer" id="btn-fullscreen-lobby" title="Expandir">
                         <div id="qrcode" class="w-48 h-48 md:w-64 md:h-64 flex items-center justify-center"></div>
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold">ESCANEIE PARA ENTRAR</h3>
-                        <p class="text-slate-400 text-sm mt-2">Ou acesse usando o código acima.</p>
-                        <button onclick="copyRoomLink()" class="mt-4 text-cyan-400 text-sm font-medium hover:text-cyan-300 flex items-center justify-center gap-2 mx-auto">
-                            <i data-lucide="link" class="w-4 h-4"></i> Copiar Link
-                        </button>
-                    </div>
+                    <button id="btn-copy-link" class="card px-6 py-3 rounded-lg text-sm font-medium hover:bg-surface-hover flex items-center justify-center gap-2">
+                        <i data-lucide="link" class="w-4 h-4"></i> Copiar Link Convite
+                    </button>
                 </div>
+                
                 <div class="w-full md:w-2/3 flex flex-col h-full">
                     <div class="flex justify-between items-end mb-6">
                         <div>
-                            <h2 class="text-3xl font-display font-bold">Jogadores</h2>
-                            <div class="text-slate-400 mt-1 flex items-center gap-2">
-                                <span id="lobby-player-count" class="text-cyan-400 font-bold text-xl">0</span> 
-                                <span>/ 50 conectados</span>
+                            <h2 class="text-2xl font-display font-bold">Sala de Espera</h2>
+                            <div class="text-slate-400 mt-1 flex items-center gap-2 text-sm font-medium">
+                                <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+                                <span id="lobby-player-count">0</span> jogadores
                             </div>
                         </div>
-                        <button onclick="startGame()" id="btn-start-game" class="btn-primary px-8 py-4 rounded-xl font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                            INICIAR QUIZ
+                        <button id="btn-start-game" class="btn-primary px-8 py-3 rounded-xl font-bold disabled:opacity-50 transition-all flex items-center gap-2">
+                            Iniciar Partida <i data-lucide="play" class="w-4 h-4"></i>
                         </button>
                     </div>
-                    <div id="lobby-players-grid" class="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 content-start pr-2">
+                    
+                    <div id="lobby-players-grid" class="flex-1 overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 content-start pr-2">
+                        <!-- DOM Updater irá popular aqui -->
+                    </div>
+                    
+                    <div id="lobby-empty-state" class="flex-1 flex flex-col items-center justify-center text-slate-500 hidden">
+                        <i data-lucide="users" class="w-16 h-16 mb-4 opacity-50"></i>
+                        <p class="font-medium">Nenhum jogador conectado</p>
+                        <p class="text-sm">Compartilhe o código acima para começarem</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SCREEN: PLAYER LOBBY -->
-        <section id="screen-player-lobby" class="screen hidden w-full h-full flex flex-col items-center justify-center p-6 text-center">
-            <div class="glass-panel p-8 rounded-3xl max-w-sm w-full flex flex-col items-center animate-slide-up">
-                <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
-                    <i data-lucide="check" class="w-10 h-10 text-green-400"></i>
+        <!-- PLAYER LOBBY -->
+        <section id="screen-player-lobby" class="screen hidden w-full h-full flex flex-col items-center justify-center p-4">
+            <div class="glass-panel p-8 w-full max-w-2xl flex flex-col items-center animate-enter text-center">
+                <div class="w-20 h-20 bg-success/20 rounded-full flex items-center justify-center mb-6 shadow-glow-success">
+                    <i data-lucide="check" class="w-10 h-10 text-success"></i>
                 </div>
-                <h2 class="text-2xl font-bold mb-2">Você entrou!</h2>
-                <div id="player-lobby-name" class="text-xl text-cyan-400 font-display font-bold mb-6">Nome</div>
-                <div class="w-full border-t border-white/10 pt-6">
-                    <div class="animate-pulse flex flex-col items-center">
-                        <i data-lucide="loader-2" class="w-6 h-6 text-slate-400 animate-spin mb-3"></i>
-                        <p class="text-slate-400 text-sm">Aguardando o professor iniciar...</p>
+                <h2 class="text-2xl font-display font-bold mb-1">Conectado com sucesso!</h2>
+                <div id="player-lobby-name" class="text-lg text-primary font-bold mb-8">Nome</div>
+                
+                <div id="group-selection-area" class="w-full hidden border-t border-white/10 pt-8 mt-2">
+                    <h3 class="text-lg font-bold mb-6 text-slate-300">Selecione sua Equipe</h3>
+                    <div id="groups-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Grupos via DOM -->
                     </div>
+                </div>
+
+                <div id="lobby-waiting-msg" class="w-full flex flex-col items-center pt-4">
+                    <div class="flex gap-1 mb-4">
+                        <div class="w-2 h-2 rounded-full bg-primary animate-bounce"></div>
+                        <div class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0.1s"></div>
+                        <div class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0.2s"></div>
+                    </div>
+                    <p class="text-slate-400 font-medium">Aguardando o host iniciar a partida...</p>
                 </div>
             </div>
         </section>
 
-        <!-- SCREEN: HOST GAME -->
-        <section id="screen-host-game" class="screen hidden w-full h-full p-4 md:p-8 flex flex-col">
-            <header class="flex justify-between items-center mb-6">
+        <!-- HOST GAME -->
+        <section id="screen-host-game" class="screen hidden w-full h-full flex flex-col p-4 md:p-8 max-w-5xl mx-auto">
+            <header class="flex justify-between items-center mb-8 shrink-0">
+                <div class="flex flex-col">
+                    <div class="text-slate-400 font-bold text-sm tracking-widest uppercase">Questão <span id="host-q-count">1/10</span></div>
+                    <div class="text-xs text-slate-500 mt-1"><span id="host-answered-count">0/0</span> responderam</div>
+                </div>
                 <div class="flex items-center gap-4">
-                    <div class="bg-white/10 px-4 py-2 rounded-lg font-bold text-sm tracking-wider">
-                        QUESTÃO <span id="host-q-current" class="text-cyan-400">1</span>/<span id="host-q-total">10</span>
-                    </div>
-                    <div id="host-mode-badge" class="bg-purple-500/20 text-purple-400 px-4 py-2 rounded-lg font-bold text-sm">MODO</div>
-                </div>
-                <div class="relative w-16 h-16 flex items-center justify-center">
-                    <svg class="absolute inset-0 w-full h-full transform -rotate-90">
-                        <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4" />
-                        <circle id="host-timer-ring" cx="32" cy="32" r="28" fill="none" stroke="#06b6d4" stroke-width="4" stroke-dasharray="175" stroke-dashoffset="0" class="transition-all duration-1000 linear" />
-                    </svg>
-                    <span id="host-timer-text" class="text-xl font-bold font-display relative z-10">30</span>
+                    <div id="host-timer-text" class="text-2xl font-display font-black text-white bg-surface px-4 py-2 rounded-xl border border-white/5">00</div>
                 </div>
             </header>
-            <div class="flex-1 flex flex-col md:flex-row gap-6">
-                <div class="flex-1 glass-panel rounded-3xl p-8 flex flex-col">
-                    <div class="flex-1 flex items-center justify-center">
-                        <h2 id="host-question-text" class="text-3xl md:text-5xl font-display font-bold text-center leading-tight">Carregando pergunta...</h2>
-                    </div>
-                    <div id="host-stats-area" class="mt-8 hidden animate-slide-up">
-                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4 text-center">Resultados</h3>
-                        <div class="grid grid-cols-4 gap-4 h-32 items-end" id="host-bars">
-                        </div>
-                        <div id="coop-progress-container" class="hidden mt-6">
-                            <div class="flex justify-between text-sm font-bold mb-2">
-                                <span>Progresso da Turma</span>
-                                <span id="coop-percent" class="text-cyan-400">0%</span>
-                            </div>
-                            <div class="w-full h-4 bg-white/10 rounded-full overflow-hidden">
-                                <div id="coop-bar" class="h-full bg-cyan-400 transition-all duration-1000 w-0"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full md:w-80 glass-panel rounded-3xl p-6 flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-lg">Classificação</h3>
-                        <span id="host-answered-count" class="text-xs bg-white/10 px-2 py-1 rounded">0/0 resp.</span>
-                    </div>
-                    <div id="host-leaderboard" class="flex-1 overflow-y-auto space-y-3 pr-2">
-                    </div>
-                    <button id="btn-host-next" onclick="nextQuestionHost()" class="w-full btn-primary py-4 rounded-xl font-bold mt-4 hidden">
-                        PRÓXIMA <i data-lucide="arrow-right" class="inline w-5 h-5"></i>
-                    </button>
-                    <button id="btn-host-finish" onclick="finishGameHost()" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl font-bold mt-4 hidden transition-colors">
-                        VER RESULTADOS <i data-lucide="trophy" class="inline w-5 h-5"></i>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- SCREEN: PLAYER GAME -->
-        <section id="screen-player-game" class="screen hidden w-full h-full flex flex-col overflow-hidden">
-            <div class="px-4 py-3 bg-white/5 border-b border-white/10 flex justify-between items-center shrink-0">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-xs shadow-lg" id="player-avatar-mini"></div>
-                    <div class="flex flex-col">
-                        <span id="player-score-mini" class="text-xs font-bold text-cyan-400">0 pts</span>
-                        <span id="player-rank-mini" class="text-[10px] text-slate-400">1º lugar</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="text-xs font-bold text-slate-400 uppercase tracking-widest"><span id="player-q-current">1</span>/<span id="player-q-total">10</span></div>
-                    <div class="w-10 h-10 rounded-full border-2 border-cyan-400 flex items-center justify-center font-bold" id="player-timer">30</div>
-                </div>
-            </div>
-            <div id="player-question-container" class="flex-1 flex flex-col p-4 md:p-8 max-w-3xl mx-auto w-full transition-all duration-300">
-                <div class="flex-1 flex items-center justify-center mb-6">
-                    <h2 id="player-question-text" class="text-xl md:text-3xl font-bold text-center leading-relaxed">Carregando...</h2>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4" id="player-options-grid">
-                    <button class="option-btn p-5 rounded-2xl text-left text-lg font-medium shadow-lg flex items-start gap-4" onclick="selectAnswer(0)">
-                        <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-bold shrink-0">A</span>
-                        <span id="opt-0-text" class="leading-tight">Opção A</span>
-                    </button>
-                    <button class="option-btn p-5 rounded-2xl text-left text-lg font-medium shadow-lg flex items-start gap-4" onclick="selectAnswer(1)">
-                        <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-bold shrink-0">B</span>
-                        <span id="opt-1-text" class="leading-tight">Opção B</span>
-                    </button>
-                    <button class="option-btn p-5 rounded-2xl text-left text-lg font-medium shadow-lg flex items-start gap-4" onclick="selectAnswer(2)">
-                        <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-bold shrink-0">C</span>
-                        <span id="opt-2-text" class="leading-tight">Opção C</span>
-                    </button>
-                    <button class="option-btn p-5 rounded-2xl text-left text-lg font-medium shadow-lg flex items-start gap-4" onclick="selectAnswer(3)">
-                        <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-bold shrink-0">D</span>
-                        <span id="opt-3-text" class="leading-tight">Opção D</span>
-                    </button>
-                </div>
-                <div id="player-feedback" class="hidden absolute inset-0 z-20 flex-col items-center justify-center bg-black/80 backdrop-blur-sm animate-pop">
-                    <div id="feedback-icon" class="w-24 h-24 rounded-full flex items-center justify-center mb-4">
-                    </div>
-                    <h2 id="feedback-title" class="text-4xl font-display font-bold mb-2">CORRETO!</h2>
-                    <p id="feedback-points" class="text-xl text-cyan-400 font-bold">+125 pontos</p>
-                    <p class="text-sm text-slate-400 mt-8 animate-pulse">Aguardando próxima questão...</p>
-                </div>
-            </div>
-            <div id="chaos-powers-bar" class="hidden shrink-0 bg-slate-900 border-t border-purple-500/30 p-3 flex gap-2 overflow-x-auto">
-                <button onclick="usePower('block')" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors" id="btn-power-block">
-                    <i data-lucide="ban" class="w-4 h-4 text-purple-400"></i> <span class="text-sm font-bold">Bloquear (1)</span>
-                </button>
-                <button onclick="usePower('shuffle')" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors" id="btn-power-shuffle">
-                    <i data-lucide="shuffle" class="w-4 h-4 text-purple-400"></i> <span class="text-sm font-bold">Embaralhar (1)</span>
-                </button>
-            </div>
-        </section>
-
-        <!-- SCREEN: HOST RESULT -->
-        <section id="screen-host-result" class="screen hidden w-full h-full p-4 md:p-8 flex flex-col items-center justify-center overflow-y-auto">
-            <h1 class="text-5xl font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 mb-12 animate-slide-up">PODIUM FINAL</h1>
             
-            <div id="podium-container" class="flex items-end justify-center gap-4 md:gap-8 w-full max-w-4xl h-64 md:h-80 mb-12">
-                <div class="flex flex-col items-center animate-slide-up" style="animation-delay: 0.3s">
-                    <div class="text-xl font-bold truncate w-24 md:w-32 text-center" id="podium-2-name">-</div>
-                    <div class="text-sm text-slate-400 mb-2" id="podium-2-score">0 pts</div>
-                    <div class="w-24 md:w-32 h-3/4 bg-gradient-to-t from-slate-800 to-slate-400 rounded-t-xl flex justify-center pt-4 shadow-lg border-t-2 border-slate-300">
-                        <span class="text-4xl font-display font-black text-slate-900 opacity-50">2</span>
-                    </div>
-                </div>
-                <div class="flex flex-col items-center animate-slide-up" style="animation-delay: 0.6s">
-                    <i data-lucide="crown" class="w-12 h-12 text-yellow-400 mb-2 animate-bounce"></i>
-                    <div class="text-2xl font-bold truncate w-28 md:w-40 text-center text-yellow-400" id="podium-1-name">-</div>
-                    <div class="text-sm text-slate-400 mb-2" id="podium-1-score">0 pts</div>
-                    <div class="w-28 md:w-40 h-full bg-gradient-to-t from-yellow-900 to-yellow-500 rounded-t-xl flex justify-center pt-4 shadow-[0_0_30px_rgba(234,179,8,0.3)] border-t-2 border-yellow-300 z-10 relative">
-                        <span class="text-5xl font-display font-black text-yellow-900 opacity-50">1</span>
-                    </div>
-                </div>
-                <div class="flex flex-col items-center animate-slide-up" style="animation-delay: 0.1s">
-                    <div class="text-lg font-bold truncate w-24 md:w-32 text-center text-orange-300" id="podium-3-name">-</div>
-                    <div class="text-sm text-slate-400 mb-2" id="podium-3-score">0 pts</div>
-                    <div class="w-24 md:w-32 h-1/2 bg-gradient-to-t from-orange-950 to-orange-700 rounded-t-xl flex justify-center pt-4 shadow-lg border-t-2 border-orange-400">
-                        <span class="text-3xl font-display font-black text-orange-950 opacity-50">3</span>
-                    </div>
-                </div>
-            </div>
-            <button onclick="goHome()" class="btn-primary px-8 py-4 rounded-xl font-bold text-lg mt-8">VOLTAR AO INÍCIO</button>
-        </section>
+            <div id="host-tournament-banner" class="hidden mb-6 p-3 bg-warning/10 border border-warning/30 rounded-xl text-warning text-center font-bold text-sm tracking-wide"></div>
 
-        <!-- SCREEN: PLAYER RESULT -->
-        <section id="screen-player-result" class="screen hidden w-full h-full p-6 flex flex-col items-center justify-center text-center">
-            <div class="glass-panel p-8 rounded-3xl w-full max-w-sm animate-pop flex flex-col items-center">
-                <i data-lucide="award" class="w-20 h-20 text-cyan-400 mb-4"></i>
-                <h2 class="text-3xl font-display font-bold mb-2">Fim de Jogo!</h2>
+            <div class="flex-1 flex flex-col items-center justify-center relative w-full max-w-4xl mx-auto">
+                <h2 id="host-question-text" class="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-center leading-tight max-w-prose mb-12">...</h2>
                 
-                <div class="bg-white/5 border border-white/10 rounded-xl p-6 w-full my-6">
-                    <div class="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Sua Posição</div>
-                    <div class="text-5xl font-display font-black text-white" id="result-rank">--º</div>
+                <!-- Area do Gráfico (mostra no fim da pergunta) -->
+                <div id="host-stats-area" class="w-full h-48 hidden opacity-0 transition-opacity duration-500 flex-col items-center justify-end mt-4">
+                    <div class="w-full max-w-xl grid grid-cols-4 gap-4 items-end h-full border-b border-white/10 pb-2" id="host-bars">
+                        <!-- Barras atualizadas via DOMUpdater -->
+                    </div>
+                </div>
+                
+                <!-- COOP Bar -->
+                <div id="host-coop-bar-container" class="hidden w-full max-w-2xl flex-col gap-2 mt-8">
+                    <div class="flex justify-between text-sm font-bold text-slate-400">
+                        <span>Progresso da Equipe</span>
+                        <span id="coop-score-text">0 / 0</span>
+                    </div>
+                    <div class="w-full h-4 bg-surface-hover rounded-full overflow-hidden border border-white/5 relative">
+                        <div id="coop-progress-fill" class="h-full bg-success transition-all duration-1000 w-0"></div>
+                    </div>
                 </div>
 
-                <div class="flex justify-between w-full px-4 text-left">
-                    <div>
-                        <div class="text-xs text-slate-400">Pontuação</div>
-                        <div class="font-bold text-lg text-cyan-400" id="result-score">0</div>
+                <!-- Leaderboard Minimalista -->
+                <div id="host-leaderboard" class="w-full max-w-2xl mt-8 flex flex-col gap-2">
+                    <!-- Itens atualizados via DOMUpdater -->
+                </div>
+                
+                <div class="mt-8 w-full max-w-sm flex flex-col gap-3">
+                    <button id="btn-host-next" class="w-full btn-primary py-4 rounded-xl font-bold hidden shadow-glow text-lg transition-transform hover:scale-105 active:scale-95">Próxima Questão</button>
+                    <button id="btn-host-finish" class="w-full bg-success hover:bg-emerald-400 py-4 rounded-xl font-bold text-white hidden shadow-glow-success text-lg transition-transform hover:scale-105 active:scale-95">Ver Resultados Finais</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PLAYER GAME -->
+        <section id="screen-player-game" class="screen hidden w-full h-full flex flex-col overflow-hidden bg-bg">
+            <header class="w-full max-w-4xl mx-auto px-4 py-4 flex justify-between items-center shrink-0 z-20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-surface-hover border border-white/10 flex items-center justify-center font-bold text-sm shadow-md" id="player-avatar-mini"></div>
+                    <div class="flex flex-col">
+                        <span id="player-score-mini" class="text-sm font-bold text-white tracking-wide">0 pts</span>
+                        <span id="player-rank-mini" class="text-[11px] font-medium text-slate-400 uppercase tracking-widest">- lugar</span>
                     </div>
-                    <div class="text-right">
-                        <div class="text-xs text-slate-400">Acertos</div>
-                        <div class="font-bold text-lg text-green-400" id="result-correct">0/0</div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-sm font-bold text-slate-500 bg-surface-hover px-3 py-1 rounded-full"><span id="player-q-current">-</span> / <span id="player-q-total">-</span></div>
+                    <div id="player-timer" class="text-xl font-display font-black text-white bg-surface px-3 py-1 rounded-xl border border-white/5 shadow-sm transition-colors">00</div>
+                </div>
+            </header>
+            
+            <div id="player-tournament-badge" class="hidden fixed top-24 left-1/2 -translate-x-1/2 p-2 px-6 bg-slate-800/90 backdrop-blur border border-white/10 rounded-full text-slate-300 text-center font-bold text-sm shadow-2xl z-[60]">ESPECTADOR</div>
+            
+            <div id="player-question-container" class="flex-1 flex flex-col p-4 md:p-8 w-full max-w-3xl mx-auto overflow-y-auto transition-all duration-300 relative justify-center">
+                <div class="flex flex-col justify-center mb-8">
+                    <h2 id="player-question-text" class="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-center leading-snug max-w-prose mx-auto">...</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6 w-full" id="player-options-grid">
+                    <!-- Botões injetados dinamicamente uma vez -->
+                </div>
+                
+                <!-- Feedback Overlay -->
+                <div id="player-feedback" class="hidden absolute inset-0 z-40 flex-col items-center justify-center bg-bg/70 backdrop-blur-xl animate-enter m-2 rounded-3xl">
+                    <div id="feedback-icon" class="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl"></div>
+                    <h2 id="feedback-title" class="text-4xl md:text-5xl font-display font-black mb-2 tracking-tight"></h2>
+                    <p id="feedback-points" class="text-xl text-slate-300 font-medium"></p>
+                    <p class="text-sm text-slate-500 mt-12 animate-pulse font-medium tracking-wide">Aguarde a próxima questão</p>
+                </div>
+            </div>
+
+            <!-- Chaos Powers Bar -->
+            <div id="chaos-powers-bar" class="hidden shrink-0 bg-surface border-t border-secondary/20 p-4 shadow-[0_-10px_30px_rgba(139,92,246,0.05)] z-20">
+                <div class="max-w-3xl mx-auto">
+                    <div class="text-[10px] text-secondary font-bold uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <i data-lucide="zap" class="w-3 h-3"></i> Sabotagens (Modo Caos)
+                    </div>
+                    <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                        <button class="btn-power flex-1 min-w-[140px] flex flex-col items-center gap-1 p-3 rounded-xl bg-surface-hover border border-white/5 hover:border-secondary/50 hover:bg-secondary/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed" data-power="block">
+                            <i data-lucide="ban" class="w-5 h-5 text-secondary"></i> 
+                            <span class="text-xs font-bold">Bloquear Tela</span>
+                            <span class="text-[10px] text-slate-500 cooldown-text">Pronto</span>
+                        </button>
+                        <button class="btn-power flex-1 min-w-[140px] flex flex-col items-center gap-1 p-3 rounded-xl bg-surface-hover border border-white/5 hover:border-accent/50 hover:bg-accent/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed" data-power="shuffle">
+                            <i data-lucide="shuffle" class="w-5 h-5 text-accent"></i> 
+                            <span class="text-xs font-bold">Embaralhar</span>
+                            <span class="text-[10px] text-slate-500 cooldown-text">Pronto</span>
+                        </button>
                     </div>
                 </div>
             </div>
-            <button onclick="goHome()" class="mt-8 text-slate-400 hover:text-white font-medium underline">Sair da sala</button>
+            
+            <!-- Chaos Overlay for Victim -->
+            <div id="chaos-victim-overlay" class="hidden absolute inset-0 z-50 pointer-events-none flex-col items-center justify-center">
+                <div class="bg-error text-white px-6 py-3 rounded-full font-bold text-xl shadow-[0_0_30px_rgba(239,68,68,0.5)] animate-bounce mb-8">
+                    <i data-lucide="alert-triangle" class="inline w-6 h-6 mr-2"></i> VOCÊ FOI SABOTADO!
+                </div>
+            </div>
         </section>
 
+        <!-- RESULTADOS FINAIS -->
+        <section id="screen-host-result" class="screen hidden w-full h-full p-4 md:p-8 flex flex-col items-center justify-center overflow-y-auto">
+            <h1 class="text-5xl font-display font-black text-white mb-2 animate-enter">Classificação Final</h1>
+            <p class="text-slate-400 font-medium mb-12 animate-enter" style="animation-delay: 0.1s">Parabéns aos vencedores!</p>
+            
+            <div id="podium-container" class="flex items-end justify-center gap-2 md:gap-6 w-full max-w-4xl h-64 md:h-80 mb-12">
+                <!-- DOM Updater Podium -->
+            </div>
+            <button id="btn-host-home" class="card px-8 py-4 rounded-xl font-bold hover:bg-surface-hover transition-colors z-20 shadow-sm">Encerrar Partida</button>
+        </section>
+
+        <!-- Modais Mantidos -->
+        <!-- WIZARD CREATE ROOM -->
+        <div id="modal-create" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity">
+            <div class="w-full max-w-xl flex flex-col transform scale-95 transition-transform duration-300">
+                
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-display font-black text-white tracking-tight">Criar nova partida</h2>
+                    <p class="text-slate-400 mt-2 font-medium">Configure as regras e o estilo de jogo.</p>
+                </div>
+
+                <div class="card p-6 md:p-8 flex flex-col relative shadow-2xl border-white/5">
+                    <button class="btn-close-modal absolute top-4 right-4 text-slate-500 hover:text-white transition-colors" data-modal="modal-create" aria-label="Fechar"><i data-lucide="x"></i></button>
+                    
+                    <!-- Passo 1: Modo de Jogo -->
+                    <div id="wizard-step-1" class="wizard-pane flex flex-col animate-enter">
+                        <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Modo de jogo</label>
+                        <div class="grid grid-cols-2 gap-3 mb-6">
+                            <button class="wizard-mode-btn bg-surface-hover border-2 border-primary rounded-xl p-4 text-center transition-all relative overflow-hidden group selected" data-mode="ffa">
+                                <div class="text-3xl mb-2">🏆</div>
+                                <div class="font-bold text-white relative z-10">Competitivo</div>
+                                <div class="text-[10px] text-slate-400 mt-1 relative z-10 leading-tight">Cada um por si</div>
+                            </button>
+                            <button class="wizard-mode-btn bg-surface border-2 border-white/5 rounded-xl p-4 text-center hover:border-slate-500 transition-all group" data-mode="tournament">
+                                <div class="text-3xl mb-2">🏅</div>
+                                <div class="font-bold text-white relative z-10">Torneio</div>
+                                <div class="text-[10px] text-slate-400 mt-1 relative z-10 leading-tight">Eliminatórias diretas</div>
+                            </button>
+                            <button class="wizard-mode-btn bg-surface border-2 border-white/5 rounded-xl p-4 text-center hover:border-slate-500 transition-all group" data-mode="teams">
+                                <div class="text-3xl mb-2">👥</div>
+                                <div class="font-bold text-white relative z-10">Grupos</div>
+                                <div class="text-[10px] text-slate-400 mt-1 relative z-10 leading-tight">Equipes balanceadas</div>
+                            </button>
+                            <button class="wizard-mode-btn bg-surface border-2 border-white/5 rounded-xl p-4 text-center hover:border-slate-500 transition-all group" data-mode="coop">
+                                <div class="text-3xl mb-2">🤝</div>
+                                <div class="font-bold text-white relative z-10">Cooperação Total</div>
+                                <div class="text-[10px] text-slate-400 mt-1 relative z-10 leading-tight">Todos jogam juntos</div>
+                            </button>
+                        </div>
+                        
+                        <div id="chaos-toggle-container" class="mb-8">
+                            <label class="flex items-center justify-between cursor-pointer p-4 rounded-xl bg-surface-hover border border-white/5 hover:border-white/10 transition-colors">
+                                <div>
+                                    <div class="font-bold text-sm text-secondary">Ativar Modo Caos</div>
+                                    <div class="text-xs text-slate-400">Permite usar sabotagens na partida</div>
+                                </div>
+                                <input type="checkbox" id="config-chaos-enable" class="w-5 h-5 accent-secondary rounded cursor-pointer">
+                            </label>
+                        </div>
+
+                        <button class="btn-wizard-next btn-primary w-full py-4 rounded-xl font-bold text-lg shadow-glow">Continuar</button>
+                    </div>
+
+                    <!-- Passo 2: Dificuldade e Detalhes -->
+                    <div id="wizard-step-2" class="wizard-pane flex flex-col hidden animate-enter">
+                        <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Dificuldade</label>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-6" id="diff-chips">
+                            <div class="wizard-chip selected text-center py-3 rounded-lg font-bold text-sm" data-diff="misto">Misto</div>
+                            <div class="wizard-chip text-center py-3 rounded-lg font-bold text-sm" data-diff="facil">Fácil</div>
+                            <div class="wizard-chip text-center py-3 rounded-lg font-bold text-sm" data-diff="medio">Médio</div>
+                            <div class="wizard-chip text-center py-3 rounded-lg font-bold text-sm" data-diff="dificil">Difícil</div>
+                        </div>
+                        
+                        <div id="config-count-container" class="mb-6 transition-all">
+                            <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Quantidade</label>
+                            <div class="segmented-control" id="count-segments">
+                                <div class="seg-btn" data-val="5">5</div>
+                                <div class="seg-btn selected" data-val="10">10</div>
+                                <div class="seg-btn" data-val="20">20</div>
+                                <div class="seg-btn" data-val="30">30</div>
+                                <div class="seg-btn" data-val="50">50</div>
+                            </div>
+                        </div>
+                        
+                        <div id="config-fixed-msg" class="mb-6 hidden text-center p-4 rounded-xl bg-surface-hover border border-white/5 text-sm text-slate-300 font-medium">
+                            Nesta dificuldade, a quantidade é fixada pelo tamanho do banco.
+                        </div>
+                        
+                        <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Tempo por Questão</label>
+                        <div class="segmented-control mb-8" id="time-segments">
+                            <div class="seg-btn selected" data-val="30">30s</div>
+                            <div class="seg-btn" data-val="45">45s</div>
+                            <div class="seg-btn" data-val="60">60s</div>
+                        </div>
+                        
+                        <div class="flex gap-3 mt-auto">
+                            <button class="btn-wizard-prev flex-1 bg-surface-hover border border-white/10 hover:bg-white/5 py-4 rounded-xl font-bold text-white transition-colors">Voltar</button>
+                            <button id="btn-do-create" class="flex-[2] btn-primary py-4 rounded-xl font-bold text-lg shadow-glow">Criar Sala</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-join" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-opacity">
+            <div class="card w-full max-w-sm p-6 md:p-8 transform scale-95 transition-transform duration-300">
+                <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+                    <h2 class="text-2xl font-display font-bold">Entrar</h2>
+                    <button class="btn-close-modal text-slate-400 hover:text-white transition-colors" data-modal="modal-join"><i data-lucide="x"></i></button>
+                </div>
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-300 mb-2">Código da Sala</label>
+                        <input type="text" id="join-code" class="w-full bg-bg border border-white/10 rounded-xl p-4 text-center text-2xl font-bold text-white uppercase outline-none focus:border-primary transition-colors tracking-widest" placeholder="-----" maxlength="5">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-300 mb-2">Seu Nome</label>
+                        <input type="text" id="join-name" class="w-full bg-bg border border-white/10 rounded-xl p-4 text-lg text-white outline-none focus:border-primary transition-colors" placeholder="Ex: Maria" maxlength="15">
+                    </div>
+                    <button id="btn-do-join" class="w-full btn-primary py-4 rounded-xl font-bold text-lg mt-2 flex justify-center items-center gap-2">
+                        Conectar
+                    </button>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <!-- Global Toast Container -->
-    <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 flex flex-col gap-2 pointer-events-none"></div>
+    <div id="toast-container" class="fixed top-4 left-1/2 transform -translate-x-1/2 flex flex-col gap-2 pointer-events-none z-[9999]"></div>
 
-    <script type="module">
-        // 1. Firebase Imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // 2. Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBAFHuTixMlhCkM88jOOT8s6FhRW-sxeCk",
-            authDomain: "jogoquimica-1bb9f.firebaseapp.com",
-            projectId: "jogoquimica-1bb9f",
-            storageBucket: "jogoquimica-1bb9f.firebasestorage.app",
-            messagingSenderId: "35817978106",
-            appId: "1:35817978106:web:55d7c73497d6be1b2eb143",
-            measurementId: "G-TDXDGT04X8"
-        };
-        
-        const appId = 'quimica-quiz-local';
-        
-        // App State
-        let app, db, auth;
-        let currentUser = null;
-        let roomUnsubscribe = null;
-        let currentRoomId = null;
-        let localState = {
-            role: null,
-            roomData: null,
-            timerInterval: null,
-            hasAnsweredCurrent: false,
-            powers: { block: 1, shuffle: 1 } 
-        };
-
-        // UI Initialization
-        lucide.createIcons();
-        initCanvasBackground();
-
-        // ----------------------------------------------------
-        // QUESTION BANK (50 Questions)
-        // ----------------------------------------------------
-        const ALL_QUESTIONS = [
-            { id:1, d:"facil", t:"Um átomo neutro possui Z=11 e A=23. Ao perder um elétron e virar cátion monovalente, qual a composição?", o:["11p, 12n e 10e", "11p, 11n e 11e", "10p, 12n e 11e", "11p, 23n e 10e"], a:0 },
-            { id:2, d:"medio", t:"Átomo X (20p, 20n) e Y (19p, 21n). A relação de semelhança atômica é:", o:["Isótopos", "Isóbaros", "Isótonos", "Isoeletrônicos"], a:1 },
-            { id:3, d:"facil", t:"Quais ligações predominam no NaCl e no O₂, respectivamente?", o:["Covalente e Iônica", "Iônica e Iônica", "Covalente e Metálica", "Iônica e Covalente"], a:3 },
-            { id:4, d:"medio", t:"No mesmo período, o raio atômico diminui à direita devido ao:", o:["Aumento de camadas", "Aumento da carga nuclear efetiva", "Repulsão por nêutrons", "Decréscimo da massa atômica"], a:1 },
-            { id:5, d:"facil", t:"Qual representa exclusivamente um fenômeno químico?", o:["Sublimação da naftalina", "Queima de uma vela", "Dissolução de açúcar", "Fusão do gelo"], a:1 },
-            { id:6, d:"medio", t:"Na fotossíntese (6 CO₂ + 6 H₂O → C₆H₁₂O₆ + 6 O₂):", o:["Água é produto", "Reação de análise", "CO₂ e água são reagentes", "Átomos de oxigênio variam"], a:2 },
-            { id:7, d:"dificil", t:"Segundo Bohr, quando um elétron salta para uma órbita mais externa:", o:["Absorve energia (quantum)", "Emite fóton", "Aumenta massa", "Emite radiação alfa"], a:0 },
-            { id:8, d:"facil", t:"A eletronegatividade cresce na tabela periódica:", o:["De cima para baixo e dir. para esq.", "De baixo para cima e esq. para dir.", "Idêntica ao raio", "Apenas metais alcalinos"], a:1 },
-            { id:9, d:"medio", t:"Mistura de duas soluções gerando um sólido branco que decanta é:", o:["Fenômeno físico", "Transformação química (precipitação)", "Destilação", "Simples troca com hidrogênio"], a:1 },
-            { id:10, d:"dificil", t:"Qual molécula é linear e tem duas ligações covalentes duplas?", o:["H₂O", "CH₄", "CO₂", "NH₃"], a:2 },
-            { id:11, d:"facil", t:"O que define a identidade química de um elemento?", o:["Nêutrons", "Elétrons de valência", "Número de prótons", "Massa atômica"], a:2 },
-            { id:12, d:"medio", t:"Íon de carga -2 com 18 e⁻ e 16 n. Qual o número de massa?", o:["32", "34", "36", "16"], a:0 },
-            { id:13, d:"facil", t:"Qual indica um fenômeno puramente físico?", o:["Enferrujamento", "Evaporação do álcool", "Cozimento de ovo", "Azedamento do leite"], a:1 },
-            { id:14, d:"medio", t:"Elementos da mesma família na Tabela Periódica apresentam em comum:", o:["Camadas eletrônicas", "Propriedades e elétrons de valência", "Massa atômica", "Raio atômico"], a:1 },
-            { id:15, d:"dificil", t:"A ligação metálica é descrita pelo modelo de:", o:["Compartilhamento sp³", "Atração dipolo", "Mar de elétrons", "Transferência irreversível"], a:2 },
-            { id:16, d:"facil", t:"Átomos com mesmo nº de prótons e diferentes nêutrons são:", o:["Isótopos", "Isóbaros", "Isótonos", "Isômeros"], a:0 },
-            { id:17, d:"medio", t:"Reação de síntese geral:", o:["AB → A + B", "A + B → AB", "A + BC → AB + C", "AB + CD → AD + CB"], a:1 },
-            { id:18, d:"facil", t:"Família de elementos altamente estáveis que raramente formam ligações:", o:["Metais Alcalinos", "Halogênios", "Calcogênios", "Gases Nobres"], a:3 },
-            { id:19, d:"medio", t:"Característica dos compostos iônicos quando sólidos:", o:["Condutividade elétrica", "Baixo ponto de fusão", "Alta tenacidade", "Alta fragilidade e alto PF"], a:3 },
-            { id:20, d:"dificil", t:"Configuração 4s² 3d¹⁰ 4p⁵ localiza-se em:", o:["3º P, Gr 15", "4º P, Gr 17", "4º P, Gr 15", "5º P, Gr 18"], a:1 },
-            { id:21, d:"facil", t:"Triturar comprimido efervescente antes da água altera:", o:["Temperatura", "Concentração", "Superfície de contato", "Natureza dos produtos"], a:2 },
-            { id:22, d:"medio", t:"Átomos isótonos possuem:", o:["Mesma massa", "Mesmo nº nêutrons, dif. prótons", "Mesmo prótons e nêutrons", "Mesmo elétrons"], a:1 },
-            { id:23, d:"facil", t:"Na molécula de H₂O, quantos elétrons são compartilhados no total?", o:["4 elétrons (2 pares)", "1 par", "4 pares", "Nenhum (iônica)"], a:0 },
-            { id:24, d:"medio", t:"Qual fenômeno caracteriza transformação exotérmica?", o:["Fusão", "Evaporação", "Combustão", "Sublimação"], a:2 },
-            { id:25, d:"dificil", t:"Qual propriedade NÃO segue o mesmo padrão da Energia de Ionização?", o:["Eletronegatividade", "Afinidade Eletrônica", "Raio Atômico", "Eletropositividade"], a:2 },
-            { id:26, d:"facil", t:"Ligação covalente simples ocorre quando há:", o:["Transferência definitiva", "Compartilhamento de 1 par de e⁻", "Atração magnética", "Perda total"], a:1 },
-            { id:27, d:"medio", t:"Classificação de Zn + 2 HCl → ZnCl₂ + H₂:", o:["Síntese", "Decomposição", "Simples troca", "Dupla troca"], a:2 },
-            { id:28, d:"facil", t:"Número de massa (A) é a soma de:", o:["Prótons e elétrons", "Elétrons e nêutrons", "Prótons e nêutrons", "P, n e e"], a:2 },
-            { id:29, d:"medio", t:"Cátion Al³⁺ (Z=13 neutro) tem quantos elétrons?", o:["16", "13", "10", "3"], a:2 },
-            { id:30, d:"dificil", t:"Par que forma ligação iônica com fórmula XY₂:", o:["Sódio e Cloro", "Magnésio e Flúor", "Alumínio e Oxigênio", "Carbono e Oxigênio"], a:1 },
-            { id:31, d:"facil", t:"Derretimento do ferro é transformação:", o:["Química", "Física (fusão)", "Alotrópica", "Quebra de ligações"], a:1 },
-            { id:32, d:"medio", t:"Lei de Lavoisier em sistema fechado:", o:["Massa produtos > reagentes", "Massa vira luz", "Massa reagentes = produtos", "Novos átomos criados"], a:2 },
-            { id:33, d:"facil", t:"Elemento com menor massa e estrutura mais simples:", o:["Hélio", "Lítio", "Hidrogênio", "Oxigênio"], a:2 },
-            { id:34, d:"medio", t:"Geometria molecular do BF₃:", o:["Linear", "Trigonal plana", "Piramidal", "Tetraédrica"], a:1 },
-            { id:35, d:"dificil", t:"Por que energia ionização N > O?", o:["O menor raio", "N tem subnível p semi-preenchido estável", "N gás nobre", "Carga N maior"], a:1 },
-            { id:36, d:"facil", t:"Substâncias formadas por um único elemento são:", o:["Compostas", "Simples", "Misturas", "Soluções"], a:1 },
-            { id:37, d:"medio", t:"Ânion S²⁻ (Z=16) tem configuração de valência:", o:["3s² 3p⁴", "3s² 3p⁶", "2s² 2p⁶", "4s²"], a:1 },
-            { id:38, d:"facil", t:"Evidência macroscópica de transformação química:", o:["Quebra mecânica", "Mudança cor/gás", "Derretimento cera", "Dissolução sal"], a:1 },
-            { id:39, d:"medio", t:"Elementos Z=12 e Z=9 reagem formando:", o:["Iônica, AB₂", "Covalente, A₂B", "Metálica, AB", "Iônica, A₂B₃"], a:0 },
-            { id:40, d:"dificil", t:"Propriedade que diminui com aumento do Z no grupo:", o:["Raio atômico", "Camadas", "Energia de ionização", "Massa atômica"], a:2 },
-            { id:41, d:"facil", t:"Coeficiente do O₂ na eq: 2 H₂ + O₂ → 2 H₂O", o:["1", "2", "4", "0"], a:0 },
-            { id:42, d:"medio", t:"Átomos isóbaros têm mesmo:", o:["Prótons", "Nêutrons", "Número de massa (A)", "Elétrons"], a:2 },
-            { id:43, d:"facil", t:"Volume fixo, forma variável:", o:["Sólido", "Líquido", "Gasoso", "Plasma"], a:1 },
-            { id:44, d:"medio", t:"Ligação covalente dativa diferencia-se pois:", o:["Elétrons de único átomo", "Transferência iônica", "Apenas metais", "Sem regra octeto"], a:0 },
-            { id:45, d:"dificil", t:"Isoeletrônico do Argônio (Z=18):", o:["Na⁺ (Z=11)", "Ca²⁺ (Z=20)", "O²⁻ (Z=8)", "Cl⁺ (Z=17)"], a:1 },
-            { id:46, d:"facil", t:"Queima de papel é irreversível pois:", o:["Muda forma", "Forma novas substâncias", "Sólido para líquido", "Átomos somem"], a:1 },
-            { id:47, d:"medio", t:"Grupo 16 é:", o:["Alcalinoterrosos", "Halogênios", "Calcogênios", "Carbono"], a:2 },
-            { id:48, d:"facil", t:"Onde concentra massa do átomo?", o:["Eletrosfera", "Núcleo", "Superfície", "Orbitais p"], a:1 },
-            { id:49, d:"medio", t:"Dupla troca ocorre completa quando:", o:["Elemento simples desloca composto", "Trocam íons formando precipitado/gás/água", "Divide-se", "Fundem"], a:1 },
-            { id:50, d:"dificil", t:"CCl₄ tem lig polares mas é apolar pois:", o:["Cl anula massa", "Geometria tetraédrica simétrica anula dipolos", "É iônica", "C impede corrente"], a:1 }
-        ];
-
-        // ----------------------------------------------------
-        // INITIALIZATION & FIREBASE
-        // ----------------------------------------------------
-        async function initApp() {
-            if (!firebaseConfig) {
-                showToast("Erro: Firebase não configurado no ambiente.", "error");
-                return;
-            }
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                if (token) {
-                    try {
-                        await signInWithCustomToken(auth, token);
-                    } catch (tokenError) {
-                        console.warn("Custom token mismatch/failed, falling back to anonymous auth:", tokenError);
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth);
-                }
-                
-                currentUser = { uid: auth.currentUser.uid, isHost: false, name: null };
-                switchScreen('screen-home');
-                console.log("App initialized. UID:", currentUser.uid);
-            } catch (error) {
-                console.error("Auth error:", error);
-                showToast("Falha ao conectar servidor.", "error");
-            }
-        }
-
-        window.onload = initApp;
-
-        // ----------------------------------------------------
-        // UTILS & UI HELPERS
-        // ----------------------------------------------------
-        window.switchScreen = (screenId) => {
-            document.querySelectorAll('.screen').forEach(el => el.classList.add('hidden'));
-            const target = document.getElementById(screenId);
-            if (target) {
-                target.classList.remove('hidden');
-                target.style.opacity = 0;
-                setTimeout(() => target.style.opacity = 1, 50);
-                target.style.transition = "opacity 0.3s ease";
-            }
-        };
-
-        window.showToast = (msg, type = 'info') => {
-            const c = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const colors = { info: 'bg-blue-600', success: 'bg-green-600', error: 'bg-red-600', warning: 'bg-yellow-600' };
-            toast.className = `${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg font-bold animate-slide-up flex items-center gap-2 text-sm z-50`;
-            toast.innerHTML = type === 'error' ? `<i data-lucide="alert-triangle" class="w-4 h-4"></i> ${msg}` : msg;
-            c.appendChild(toast);
-            lucide.createIcons();
-            setTimeout(() => {
-                toast.style.opacity = 0;
-                toast.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        };
-
-        window.showCreateRoomModal = () => {
-            const m = document.getElementById('modal-create');
-            m.classList.remove('hidden');
-            setTimeout(() => { m.classList.remove('opacity-0'); m.querySelector('div').classList.remove('scale-95'); }, 10);
-        };
-
-        window.showJoinRoomModal = () => {
-            const m = document.getElementById('modal-join');
-            m.classList.remove('hidden');
-            setTimeout(() => { m.classList.remove('opacity-0'); m.querySelector('div').classList.remove('scale-95'); }, 10);
-        };
-
-        window.closeModal = (id) => {
-            const m = document.getElementById(id);
-            m.classList.add('opacity-0');
-            m.querySelector('div').classList.add('scale-95');
-            setTimeout(() => m.classList.add('hidden'), 300);
-        };
-
-        function generateRoomCode() {
-            return Math.random().toString(36).substring(2, 7).toUpperCase();
-        }
-
-        function getRoomPath(code) {
-            return doc(db, 'artifacts', appId, 'public', 'data', 'rooms', code);
-        }
-
-        // ----------------------------------------------------
-        // HOST FUNCTIONS
-        // ----------------------------------------------------
-        window.createRoom = async () => {
-            if (!auth.currentUser) return;
-            const btn = document.getElementById('btn-do-create');
-            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin"></i> Criando...`;
-            btn.disabled = true;
-
-            const mode = document.getElementById('config-mode').value;
-            const diff = document.getElementById('config-diff').value;
-            const count = parseInt(document.getElementById('config-count').value);
-            const time = parseInt(document.getElementById('config-time').value);
-
-            let pool = ALL_QUESTIONS;
-            if (diff !== 'random') pool = pool.filter(q => q.d === diff);
-            pool = pool.sort(() => 0.5 - Math.random());
-            const selectedQ = pool.slice(0, count);
-
-            currentRoomId = generateRoomCode();
-            const roomRef = getRoomPath(currentRoomId);
-
-            const initialData = {
-                hostId: currentUser.uid,
-                status: 'lobby',
-                mode: mode,
-                settings: { count, time },
-                game: {
-                    qIndex: -1,
-                    timerEnd: 0,
-                    questions: selectedQ,
-                    coopScore: 0
-                },
-                players: {} 
-            };
-
-            try {
-                await setDoc(roomRef, initialData);
-                localState.role = 'host';
-                currentUser.isHost = true;
-                closeModal('modal-create');
-                setupHostLobby();
-                listenToRoom();
-                showToast("Sala criada com sucesso!", "success");
-            } catch (e) {
-                console.error(e);
-                showToast("Erro ao criar sala.", "error");
-            } finally {
-                btn.innerHTML = `GERAR SALA`;
-                btn.disabled = false;
-            }
-        };
-
-        function setupHostLobby() {
-            switchScreen('screen-host-lobby');
-            document.getElementById('display-room-code').innerText = currentRoomId;
-            
-            document.getElementById('qrcode').innerHTML = '';
-            const joinUrl = window.location.href.split('?')[0] + '?code=' + currentRoomId;
-            new QRCode(document.getElementById("qrcode"), {
-                text: joinUrl,
-                width: 200, height: 200,
-                colorDark: "#020617", colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        }
-
-        window.copyRoomLink = () => {
-            const joinUrl = window.location.href.split('?')[0] + '?code=' + currentRoomId;
-            const el = document.createElement('textarea');
-            el.value = joinUrl;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            showToast("Link copiado!");
-        };
-
-        window.startGame = async () => {
-            if (Object.keys(localState.roomData?.players || {}).length === 0) {
-                showToast("Aguarde pelo menos 1 jogador.", "warning");
-                return;
-            }
-            const roomRef = getRoomPath(currentRoomId);
-            await updateDoc(roomRef, {
-                status: 'playing',
-                'game.qIndex': 0,
-                'game.timerEnd': Date.now() + (localState.roomData.settings.time * 1000)
-            });
-        };
-
-        window.nextQuestionHost = async () => {
-            const currentQ = localState.roomData.game.qIndex;
-            const totalQ = localState.roomData.game.questions.length;
-            
-            if (currentQ + 1 >= totalQ) {
-                await updateDoc(getRoomPath(currentRoomId), { status: 'finished' });
-            } else {
-                await updateDoc(getRoomPath(currentRoomId), {
-                    'game.qIndex': currentQ + 1,
-                    'game.timerEnd': Date.now() + (localState.roomData.settings.time * 1000)
-                });
-            }
-        };
-
-        window.finishGameHost = async () => {
-            await updateDoc(getRoomPath(currentRoomId), { status: 'finished' });
-        };
-
-        // ----------------------------------------------------
-        // PLAYER FUNCTIONS
-        // ----------------------------------------------------
-        window.joinRoom = async (codeFromUrl = null) => {
-            if (!auth.currentUser) return;
-            const code = codeFromUrl || document.getElementById('join-code').value.toUpperCase().trim();
-            const name = document.getElementById('join-name')?.value.trim();
-            
-            if (!code) { showToast("Digite o código da sala", "error"); return; }
-            if (!codeFromUrl && !name) { showToast("Digite seu nome", "error"); return; }
-
-            const btn = document.getElementById('btn-do-join');
-            if(btn) { btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin"></i> Entrando...`; btn.disabled = true; }
-
-            const roomRef = getRoomPath(code);
-            try {
-                const snap = await getDoc(roomRef);
-                if (!snap.exists()) {
-                    showToast("Sala não encontrada.", "error");
-                    if(btn) { btn.innerHTML = `ENTRAR AGORA`; btn.disabled = false; }
-                    return;
-                }
-                const data = snap.data();
-                if (data.status !== 'lobby' && !data.players[currentUser.uid]) {
-                    showToast("Partida já em andamento.", "error");
-                    if(btn) { btn.innerHTML = `ENTRAR AGORA`; btn.disabled = false; }
-                    return;
-                }
-                
-                if (Object.keys(data.players || {}).length >= 50 && !data.players[currentUser.uid]) {
-                    showToast("Sala lotada (50 máx).", "error");
-                    return;
-                }
-
-                const actualName = name || (data.players[currentUser.uid] ? data.players[currentUser.uid].name : "Jogador " + Math.floor(Math.random()*100));
-
-                await updateDoc(roomRef, {
-                    [`players.${currentUser.uid}`]: {
-                        name: actualName,
-                        score: data.players[currentUser.uid]?.score || 0,
-                        ans: data.players[currentUser.uid]?.ans || {},
-                        effects: {}
-                    }
-                });
-
-                currentRoomId = code;
-                localState.role = 'player';
-                currentUser.name = actualName;
-                closeModal('modal-join');
-                
-                document.getElementById('player-lobby-name').innerText = actualName;
-                switchScreen('screen-player-lobby');
-                listenToRoom();
-
-            } catch(e) {
-                console.error(e);
-                showToast("Erro ao conectar.", "error");
-                if(btn) { btn.innerHTML = `ENTRAR AGORA`; btn.disabled = false; }
-            }
-        };
-
-        window.selectAnswer = async (optIndex) => {
-            if (localState.hasAnsweredCurrent) return;
-            const room = localState.roomData;
-            const qIndex = room.game.qIndex;
-            if (Date.now() > room.game.timerEnd) return;
-            
-            localState.hasAnsweredCurrent = true;
-            
-            const btns = document.querySelectorAll('.option-btn');
-            btns.forEach(b => b.disabled = true);
-            btns[optIndex].classList.add('selected');
-
-            const currentQ = room.game.questions[qIndex];
-            const isCorrect = currentQ.a === optIndex;
-            
-            let points = 0;
-            if (isCorrect) {
-                const timeRemaining = Math.max(0, room.game.timerEnd - Date.now());
-                const timeBonus = (timeRemaining / (room.settings.time * 1000));
-                const mult = currentQ.d === 'facil' ? 1.0 : currentQ.d === 'medio' ? 1.25 : 1.5;
-                points = Math.round((100 + (timeBonus * 50)) * mult);
-            }
-
-            try {
-                const currentScore = room.players[currentUser.uid].score || 0;
-                const newScore = currentScore + points;
-
-                const updates = {
-                    [`players.${currentUser.uid}.ans.${qIndex}`]: optIndex,
-                    [`players.${currentUser.uid}.score`]: newScore
-                };
-                
-                await updateDoc(getRoomPath(currentRoomId), updates);
-                showToast("Resposta registrada!");
-
-            } catch (e) {
-                console.error(e);
-                showToast("Erro ao salvar resposta", "error");
-                localState.hasAnsweredCurrent = false;
-                btns.forEach(b => b.disabled = false);
-            }
-        };
-
-        window.usePower = async (powerType) => {
-            if (localState.powers[powerType] <= 0) return;
-            const playersMap = localState.roomData.players;
-            const uids = Object.keys(playersMap).filter(id => id !== currentUser.uid);
-            if (uids.length === 0) return;
-
-            const targetId = uids[Math.floor(Math.random() * uids.length)];
-            
-            localState.powers[powerType]--;
-            document.getElementById(`btn-power-${powerType}`).querySelector('span').innerText = `${powerType === 'block' ? 'Bloquear' : 'Embaralhar'} (${localState.powers[powerType]})`;
-            if (localState.powers[powerType] === 0) document.getElementById(`btn-power-${powerType}`).classList.add('opacity-50', 'pointer-events-none');
-
-            try {
-                await updateDoc(getRoomPath(currentRoomId), {
-                    [`players.${targetId}.effects.${powerType}`]: true
-                });
-                showToast("Sabotagem enviada! 😈", "success");
-            } catch (e) {
-                console.error(e);
-            }
-        };
-
-        // ----------------------------------------------------
-        // SYNC & RENDER LOOP
-        // ----------------------------------------------------
-        function listenToRoom() {
-            if (roomUnsubscribe) roomUnsubscribe();
-            roomUnsubscribe = onSnapshot(getRoomPath(currentRoomId), (docSnap) => {
-                if (!docSnap.exists()) {
-                    showToast("Sala encerrada.");
-                    goHome();
-                    return;
-                }
-                const oldStatus = localState.roomData?.status;
-                const oldQIndex = localState.roomData?.game?.qIndex;
-                localState.roomData = docSnap.data();
-                
-                const rd = localState.roomData;
-                
-                if (rd.status === 'lobby') {
-                    if (localState.role === 'host') renderHostLobby(rd);
-                } 
-                else if (rd.status === 'playing') {
-                    if (oldQIndex !== rd.game.qIndex || oldStatus !== 'playing') {
-                        localState.hasAnsweredCurrent = false;
-                        prepareNewQuestion();
-                    }
-                    if (localState.role === 'host') renderHostGame(rd);
-                    if (localState.role === 'player') renderPlayerGame(rd);
-                    
-                    manageTimer();
-                }
-                else if (rd.status === 'finished') {
-                    if (oldStatus !== 'finished') {
-                        if (localState.role === 'host') renderHostResult(rd);
-                        if (localState.role === 'player') renderPlayerResult(rd);
-                    }
-                }
-            }, (error) => {
-                console.error(error);
-            });
-        }
-
-        function renderHostLobby(data) {
-            const count = Object.keys(data.players || {}).length;
-            document.getElementById('lobby-player-count').innerText = count;
-            document.getElementById('btn-start-game').disabled = count === 0;
-
-            const grid = document.getElementById('lobby-players-grid');
-            grid.innerHTML = '';
-            
-            Object.values(data.players).forEach(p => {
-                const el = document.createElement('div');
-                el.className = 'bg-white/5 border border-white/10 p-3 rounded-xl flex items-center gap-3 animate-pop';
-                el.innerHTML = `
-                    <div class="w-10 h-10 rounded-full bg-cyan-900 flex items-center justify-center font-bold text-cyan-200">
-                        ${p.name.charAt(0).toUpperCase()}
-                    </div>
-                    <span class="font-semibold truncate">${p.name}</span>
-                `;
-                grid.appendChild(el);
-            });
-        }
-
-        function renderHostGame(data) {
-            switchScreen('screen-host-game');
-            const g = data.game;
-            const q = g.questions[g.qIndex];
-            
-            document.getElementById('host-q-current').innerText = g.qIndex + 1;
-            document.getElementById('host-q-total').innerText = g.questions.length;
-            document.getElementById('host-question-text').innerText = q.t;
-            
-            let modeName = data.mode.toUpperCase();
-            if(data.mode === 'chaos') modeName = '😈 CAOS';
-            document.getElementById('host-mode-badge').innerText = modeName;
-
-            const ansArr = Object.values(data.players).map(p => p.ans[g.qIndex]).filter(a => a !== undefined);
-            document.getElementById('host-answered-count').innerText = `${ansArr.length}/${Object.keys(data.players).length} resp.`;
-            
-            const timeUp = Date.now() >= g.timerEnd;
-            
-            if (timeUp) {
-                document.getElementById('host-stats-area').classList.remove('hidden');
-                document.getElementById('btn-host-next').classList.remove('hidden');
-                if(g.qIndex === g.questions.length - 1) {
-                    document.getElementById('btn-host-next').classList.add('hidden');
-                    document.getElementById('btn-host-finish').classList.remove('hidden');
-                }
-
-                const counts = [0,0,0,0];
-                ansArr.forEach(a => counts[a]++);
-                const maxCount = Math.max(...counts, 1);
-                
-                const barsContainer = document.getElementById('host-bars');
-                barsContainer.innerHTML = '';
-                ['A','B','C','D'].forEach((letter, i) => {
-                    const h = (counts[i] / maxCount) * 100;
-                    const isCor = (i === q.a);
-                    barsContainer.innerHTML += `
-                        <div class="flex flex-col items-center gap-2 h-full justify-end">
-                            <span class="text-xs font-bold text-slate-400">${counts[i]}</span>
-                            <div class="w-full ${isCor ? 'bg-green-500' : 'bg-slate-700'} rounded-t-sm transition-all duration-1000" style="height: ${h}%"></div>
-                            <span class="font-bold text-xl ${isCor ? 'text-green-400' : 'text-slate-500'}">${letter}</span>
-                        </div>
-                    `;
-                });
-
-                if (data.mode === 'coop') {
-                    document.getElementById('coop-progress-container').classList.remove('hidden');
-                    const correctCount = counts[q.a];
-                    const pct = ansArr.length > 0 ? Math.round((correctCount/ansArr.length)*100) : 0;
-                    document.getElementById('coop-percent').innerText = `${pct}% Acertos`;
-                    document.getElementById('coop-bar').style.width = `${pct}%`;
-                }
-
-            } else {
-                document.getElementById('host-stats-area').classList.add('hidden');
-                document.getElementById('btn-host-next').classList.add('hidden');
-                document.getElementById('btn-host-finish').classList.add('hidden');
-            }
-
-            updateLeaderboardUI(data);
-        }
-
-        function updateLeaderboardUI(data) {
-            const list = document.getElementById('host-leaderboard');
-            list.innerHTML = '';
-            
-            if (data.mode === 'coop') {
-                list.innerHTML = '<div class="text-center text-slate-400 p-4">Modo Cooperativo.<br>Esforço em equipe!</div>';
-                return;
-            }
-
-            const arr = Object.values(data.players).sort((a,b) => (b.score||0) - (a.score||0)).slice(0, 8);
-            arr.forEach((p, idx) => {
-                let color = idx === 0 ? 'text-yellow-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-orange-400' : 'text-slate-400';
-                list.innerHTML += `
-                    <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                        <div class="flex items-center gap-3">
-                            <span class="font-bold ${color} w-4">${idx+1}º</span>
-                            <span class="font-medium truncate max-w-[120px]">${p.name}</span>
-                        </div>
-                        <span class="font-bold text-cyan-400">${p.score||0}</span>
-                    </div>
-                `;
-            });
-        }
-
-        function renderHostResult(data) {
-            switchScreen('screen-host-result');
-            const arr = Object.values(data.players).sort((a,b) => (b.score||0) - (a.score||0));
-            if(arr.length > 0) {
-                document.getElementById('podium-1-name').innerText = arr[0].name;
-                document.getElementById('podium-1-score').innerText = `${arr[0].score||0} pts`;
-            }
-            if(arr.length > 1) {
-                document.getElementById('podium-2-name').innerText = arr[1].name;
-                document.getElementById('podium-2-score').innerText = `${arr[1].score||0} pts`;
-            }
-            if(arr.length > 2) {
-                document.getElementById('podium-3-name').innerText = arr[2].name;
-                document.getElementById('podium-3-score').innerText = `${arr[2].score||0} pts`;
-            }
-        }
-
-        function renderPlayerGame(data) {
-            switchScreen('screen-player-game');
-            const g = data.game;
-            const q = g.questions[g.qIndex];
-            const myData = data.players[currentUser.uid];
-            
-            document.getElementById('player-q-current').innerText = g.qIndex + 1;
-            document.getElementById('player-q-total').innerText = g.questions.length;
-            document.getElementById('player-score-mini').innerText = `${myData.score || 0} pts`;
-            document.getElementById('player-avatar-mini').innerText = myData.name.charAt(0).toUpperCase();
-            
-            const rank = Object.values(data.players).filter(p => (p.score||0) > (myData.score||0)).length + 1;
-            document.getElementById('player-rank-mini').innerText = `${rank}º lugar`;
-
-            document.getElementById('player-question-text').innerText = q.t;
-            
-            const timeUp = Date.now() >= g.timerEnd;
-
-            const isShuffled = myData.effects?.shuffle;
-            const order = isShuffled ? [3,1,0,2] : [0,1,2,3];
-
-            const optsHTML = order.map(i => {
-                const label = ['A','B','C','D'][i];
-                return `
-                    <button class="option-btn p-5 rounded-2xl text-left text-lg font-medium shadow-lg flex items-start gap-4" onclick="selectAnswer(${i})" id="p-opt-${i}">
-                        <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-bold shrink-0">${label}</span>
-                        <span class="leading-tight">${q.o[i]}</span>
-                    </button>
-                `;
-            }).join('');
-            document.getElementById('player-options-grid').innerHTML = optsHTML;
-
-            if(myData.effects?.block && !localState.hasAnsweredCurrent) {
-                const wrongs = [0,1,2,3].filter(x => x !== q.a);
-                const toBlock = wrongs[Math.floor(Math.random() * wrongs.length)];
-                const btn = document.getElementById(`p-opt-${toBlock}`);
-                if(btn) {
-                    btn.disabled = true;
-                    btn.classList.add('opacity-30', 'grayscale');
-                    btn.innerHTML += '<i data-lucide="ban" class="absolute right-4 text-red-500 w-6 h-6"></i>';
-                }
-            }
-
-            const container = document.getElementById('player-question-container');
-            if(myData.effects?.fog) container.classList.add('effect-fog');
-            else container.classList.remove('effect-fog');
-
-            const btns = document.querySelectorAll('.option-btn');
-            if (localState.hasAnsweredCurrent || timeUp) {
-                btns.forEach(b => b.disabled = true);
-                const myAns = myData.ans[g.qIndex];
-                if (myAns !== undefined) {
-                    document.getElementById(`p-opt-${myAns}`)?.classList.add('selected');
-                }
-            }
-
-            if (timeUp) {
-                const myAns = myData.ans[g.qIndex];
-                const fb = document.getElementById('player-feedback');
-                const isCor = myAns === q.a;
-                
-                document.getElementById(`p-opt-${q.a}`)?.classList.add('correct');
-                if (myAns !== undefined && !isCor) document.getElementById(`p-opt-${myAns}`)?.classList.add('wrong');
-
-                if (myAns !== undefined && !fb.classList.contains('flex')) {
-                    fb.classList.remove('hidden');
-                    fb.classList.add('flex');
-                    document.getElementById('feedback-icon').className = `w-24 h-24 rounded-full flex items-center justify-center mb-4 ${isCor ? 'bg-green-500/20' : 'bg-red-500/20'}`;
-                    document.getElementById('feedback-icon').innerHTML = `<i data-lucide="${isCor ? 'check-circle' : 'x-circle'}" class="w-12 h-12 ${isCor ? 'text-green-500' : 'text-red-500'}"></i>`;
-                    document.getElementById('feedback-title').innerText = isCor ? 'CORRETO!' : 'ERROU!';
-                    document.getElementById('feedback-title').className = `text-4xl font-display font-bold mb-2 ${isCor ? 'text-green-400' : 'text-red-400'}`;
-                    
-                    document.getElementById('feedback-points').innerText = isCor ? "Pontos computados!" : "0 pontos";
-                }
-            } else {
-                document.getElementById('player-feedback').classList.add('hidden');
-                document.getElementById('player-feedback').classList.remove('flex');
-            }
-
-            if (data.mode === 'chaos') {
-                document.getElementById('chaos-powers-bar').classList.remove('hidden');
-            }
-            lucide.createIcons();
-        }
-
-        function renderPlayerResult(data) {
-            switchScreen('screen-player-result');
-            const myData = data.players[currentUser.uid];
-            const arr = Object.values(data.players).sort((a,b) => (b.score||0) - (a.score||0));
-            const rank = arr.findIndex(p => p.name === myData.name) + 1;
-            
-            document.getElementById('result-rank').innerText = `${rank}º`;
-            document.getElementById('result-score').innerText = myData.score || 0;
-            const corrects = Object.values(myData.ans || {}).reduce((acc, val, i) => {
-                return acc + (val === data.game.questions[i].a ? 1 : 0);
-            }, 0);
-            document.getElementById('result-correct').innerText = `${corrects}/${data.game.questions.length}`;
-        }
-
-        function prepareNewQuestion() {
-            document.getElementById('player-feedback')?.classList.add('hidden');
-            document.getElementById('player-feedback')?.classList.remove('flex');
-            
-            if (localState.role === 'player') {
-                const roomRef = getRoomPath(currentRoomId);
-                updateDoc(roomRef, { [`players.${currentUser.uid}.effects`]: {} }).catch(e=>console.log(e));
-            }
-        }
-
-        function manageTimer() {
-            if (localState.timerInterval) cancelAnimationFrame(localState.timerInterval);
-            
-            const g = localState.roomData.game;
-            const duration = localState.roomData.settings.time * 1000;
-            
-            const tick = () => {
-                const now = Date.now();
-                const rem = Math.max(0, g.timerEnd - now);
-                const seconds = Math.ceil(rem / 1000);
-                
-                if (localState.role === 'host') {
-                    const el = document.getElementById('host-timer-text');
-                    const ring = document.getElementById('host-timer-ring');
-                    if(el) el.innerText = seconds;
-                    if(ring) {
-                        const pct = rem / duration;
-                        ring.style.strokeDashoffset = 175 - (175 * pct);
-                        if(pct < 0.2) ring.style.stroke = '#ef4444';
-                        else ring.style.stroke = '#06b6d4';
-                    }
-                }
-
-                if (localState.role === 'player') {
-                    const el = document.getElementById('player-timer');
-                    if(el) {
-                        el.innerText = seconds;
-                        if (seconds <= 5) el.classList.add('text-red-400', 'border-red-400', 'animate-pulse');
-                        else el.classList.remove('text-red-400', 'border-red-400', 'animate-pulse');
-                    }
-                }
-
-                if (rem > 0) {
-                    localState.timerInterval = requestAnimationFrame(tick);
-                }
-            };
-            tick();
-        }
-
-        window.goHome = () => {
-            if (roomUnsubscribe) { roomUnsubscribe(); roomUnsubscribe = null; }
-            currentRoomId = null;
-            localState = { role: null, roomData: null, hasAnsweredCurrent: false, powers: {block:1, shuffle:1} };
-            switchScreen('screen-home');
-        };
-
-        window.addEventListener('load', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            if (code) {
-                document.getElementById('join-code').value = code;
-                setTimeout(() => showJoinRoomModal(), 1000);
-            }
-        });
-
-        // Background Animation
-        function initCanvasBackground() {
-            const canvas = document.getElementById('bg-canvas');
-            const ctx = canvas.getContext('2d');
-            let w, h;
-            
-            const particles = [];
-            
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
-            for(let i=0; i<40; i++){
-                particles.push({
-                    x: Math.random() * w, y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
-                    radius: Math.random() * 2 + 1
-                });
-            }
-
-            function draw() {
-                ctx.clearRect(0,0,w,h);
-                ctx.fillStyle = 'rgba(6, 182, 212, 0.5)';
-                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-                
-                for(let i=0; i<particles.length; i++) {
-                    let p = particles[i];
-                    p.x += p.vx; p.y += p.vy;
-                    
-                    if(p.x < 0 || p.x > w) p.vx *= -1;
-                    if(p.y < 0 || p.y > h) p.vy *= -1;
-                    
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
-                    ctx.fill();
-
-                    for(let j=i+1; j<particles.length; j++) {
-                        let p2 = particles[j];
-                        let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                        if(dist < 150) {
-                            ctx.beginPath();
-                            ctx.moveTo(p.x, p.y);
-                            ctx.lineTo(p2.x, p2.y);
-                            ctx.stroke();
-                        }
-                    }
-                }
-                requestAnimationFrame(draw);
-            }
-            draw();
-        }
-    </script>
+    <script type="module" src="./js/app.js"></script>
 </body>
 </html>
